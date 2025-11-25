@@ -3,186 +3,94 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WhatsApp Bubble Test</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Telegram Chat UI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    }
-    #root {
-      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
   </style>
 </head>
-<body>
-  <div id="root"></div>
+<body class="bg-gray-100">
+  <div class="flex flex-col h-screen max-w-2xl mx-auto bg-white">
+    <!-- Header -->
+    <div class="flex items-center gap-3 px-4 py-2 bg-white border-b border-gray-200">
+      <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+        <span class="text-white text-base font-semibold">A</span>
+      </div>
+      <div class="flex flex-col flex-1 min-w-0">
+        <h1 class="text-base font-medium leading-tight">Amaka</h1>
+        <span class="text-xs text-gray-500 leading-tight">last seen 11/4/2025</span>
+      </div>
+      <svg class="w-5 h-5 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+      </svg>
+    </div>
 
-  <script type="text/babel">
-    const { useState, useRef, useEffect } = React;
+    <!-- Chat Area -->
+    <div class="flex-1 overflow-y-auto px-4 py-4 bg-white flex flex-col justify-end">
+      <!-- Sunday Messages -->
+      <div class="flex flex-col items-center mb-6">
+        <div class="bg-black bg-opacity-30 text-white px-4 py-1 rounded-full text-sm mb-4">
+          Sunday
+        </div>
+      </div>
 
-    function WhatsAppChat() {
-      const [messages, setMessages] = useState([
-        { id: 1, text: "How are you doing my bro hope you're doing", time: "12:03 AM", sent: true },
-        { id: 2, text: "Hello, this is a longer message that should force the layout into a multi-line state so we can test the inline timestamp feature.", time: "12:51 AM", sent: true },
-        { id: 3, text: "Fghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", time: "10:06 AM", sent: true },
-        { id: 4, text: "Hey", time: "12:32 PM", sent: true }
-      ]);
-      
-      const [inputText, setInputText] = useState('');
-      const messagesEndRef = useRef(null);
-
-      const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      };
-
-      useEffect(() => {
-        scrollToBottom();
-      }, [messages]);
-
-      const handleSend = () => {
-        if (inputText.trim()) {
-          const now = new Date();
-          const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-          
-          setMessages([...messages, {
-            id: Date.now(),
-            text: inputText,
-            time: time,
-            sent: true
-          }]);
-          setInputText('');
-        }
-      };
-
-      const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          handleSend();
-        }
-      };
-
-      return (
-        <div className="flex flex-col h-screen bg-white">
-          {/* Header */}
-          <div className="bg-[#008069] text-white p-4 shadow-md">
-            <h1 className="text-xl font-semibold">WhatsApp Bubble Test</h1>
-            <p className="text-sm opacity-70">Testing timestamp layouts</p>
-          </div>
-
-          {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.sent ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`relative rounded-lg shadow-sm ${
-                    msg.sent
-                      ? 'bg-[#dcf8c6]'
-                      : 'bg-white'
-                  }`}
-                  style={{
-                    maxWidth: '65%',
-                    minWidth: '100px',
-                    padding: '6px 7px 8px 9px',
-                    borderRadius: msg.sent ? '7.5px 7.5px 0px 7.5px' : '7.5px 7.5px 7.5px 0px'
-                  }}
-                >
-                  {/* Message content with inline timestamp space */}
-                  <div style={{
-                    position: 'relative',
-                    display: 'flex',
-                    flexDirection: 'column'
-                  }}>
-                    <div style={{
-                      paddingRight: '4px',
-                      minHeight: '17px'
-                    }}>
-                      <span style={{ 
-                        color: '#111b21',
-                        fontSize: '14.2px',
-                        lineHeight: '19px',
-                        wordWrap: 'break-word',
-                        whiteSpace: 'pre-wrap',
-                        display: 'inline'
-                      }}>
-                        {msg.text}
-                      </span>
-                      
-                      {/* Inline spacer for timestamp - this reserves space on the same line */}
-                      <span style={{
-                        display: 'inline-block',
-                        width: '70px',
-                        height: '0px'
-                      }}></span>
-                    </div>
-                    
-                    {/* Timestamp - positioned absolutely to float on last line or create new line */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        bottom: '0px',
-                        right: '0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '3px',
-                        paddingLeft: '8px'
-                      }}
-                    >
-                      <span style={{
-                        color: '#667781',
-                        fontSize: '11px',
-                        lineHeight: '15px',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        {msg.time}
-                      </span>
-                      {msg.sent && (
-                        <svg width="14" height="10" viewBox="0 0 16 11" fill="none" style={{ flexShrink: 0 }}>
-                          <path d="M11.071 0.929L5.657 6.343L3.828 4.515L2.414 5.929L5.657 9.172L12.485 2.343L11.071 0.929Z" fill="#53bdeb"/>
-                          <path d="M15.071 0.929L9.657 6.343L9.586 6.272L8.172 7.686L9.657 9.172L16.485 2.343L15.071 0.929Z" fill="#53bdeb"/>
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                </div>
+      <div class="space-y-2 mb-6">
+        <div class="flex justify-end">
+          <div class="bg-green-100 rounded-2xl px-3 py-2 shadow-sm inline-block">
+            <div class="flex items-end gap-2">
+              <p class="text-gray-900 text-sm">How are you doing today</p>
+              <div class="flex items-center gap-1 whitespace-nowrap">
+                <span class="text-xs text-gray-500">22:53</span>
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
               </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input Area */}
-          <div className="bg-[#f0f2f5] p-3 flex gap-2 border-t border-gray-200">
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Type a message..."
-              className="flex-1 rounded-lg px-4 py-2 bg-white text-[#111b21] placeholder-[#667781] focus:outline-none border border-gray-200"
-            />
-            <button
-              onClick={handleSend}
-              className="bg-[#008069] text-white rounded-full p-3 hover:bg-[#017561] transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-              </svg>
-            </button>
+            </div>
           </div>
         </div>
-      );
-    }
 
-    ReactDOM.render(<WhatsAppChat />, document.getElementById('root'));
-  </script>
+        <div class="flex justify-end">
+          <div class="bg-green-100 rounded-2xl px-3 py-2 shadow-sm inline-block">
+            <div class="flex items-end gap-2">
+              <p class="text-gray-900 text-sm">Hope you're doing great as well</p>
+              <div class="flex items-center gap-1 whitespace-nowrap">
+                <span class="text-xs text-gray-500">23:44</span>
+                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today Messages -->
+      <div class="flex flex-col items-center mb-6">
+        <div class="bg-black bg-opacity-30 text-white px-4 py-1 rounded-full text-sm mb-4">
+          Today
+        </div>
+      </div>
+
+      <div class="flex justify-end">
+        <div class="bg-green-100 rounded-2xl px-3 py-2 shadow-sm inline-block max-w-md">
+          <p class="text-gray-900 text-sm mb-0 leading-tight">
+            Hello, this is a longer message that should force the layout into a multi-line state so we can test the inline
+          </p>
+          <div class="flex items-center justify-end gap-1 -mt-3">
+            <span class="text-xs text-gray-500">05:57</span>
+            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
