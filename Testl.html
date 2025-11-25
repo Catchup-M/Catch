@@ -26,46 +26,50 @@
   <script type="text/babel">
     const { useState } = React;
 
-    // Lucide React icons as inline SVGs
-    const ArrowLeft = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    // Lucide Icons as SVG components
+    const ArrowLeft = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
     );
 
-    const MoreVertical = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    const MoreVertical = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="1"></circle>
         <circle cx="12" cy="5" r="1"></circle>
         <circle cx="12" cy="19" r="1"></circle>
       </svg>
     );
 
-    const Check = ({ className }) => (
-      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    const Check = () => (
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="20 6 9 17 4 12"></polyline>
       </svg>
     );
 
-    function TelegramChatUI() {
+    function App() {
       return (
         <div className="flex flex-col h-screen max-w-2xl mx-auto bg-white">
           {/* Header */}
-          <div className="flex items-center gap-3 px-4 py-2.5 bg-white border-b border-gray-200">
-            <ArrowLeft className="w-6 h-6 text-gray-600" />
-            <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0">
+          <div className="flex items-center gap-3 px-3 py-2 bg-white" style={{boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)'}}>
+            <div className="w-5 h-5 text-gray-600">
+              <ArrowLeft />
+            </div>
+            <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
               <img src="https://i.ibb.co/C5b875C6/Screenshot-20250904-050841.jpg" alt="VaVia" className="w-full h-full object-cover" draggable="false" />
             </div>
             <div className="flex flex-col flex-1 min-w-0">
-              <h1 className="text-lg font-medium leading-tight">VaVia</h1>
-              <span className="text-xs text-gray-500 leading-tight">last seen 11/4/2025</span>
+              <h1 className="text-base font-medium leading-tight">VaVia</h1>
+              <span className="text-xs text-gray-400 leading-tight">last seen 11/4/2025</span>
             </div>
-            <MoreVertical className="w-5 h-5 text-gray-600 flex-shrink-0" />
+            <div className="w-5 h-5 text-gray-600 flex-shrink-0">
+              <MoreVertical />
+            </div>
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 overflow-y-auto px-4 py-4 bg-white flex flex-col justify-end hide-scrollbar">
+          <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col justify-end hide-scrollbar" style={{backgroundImage: 'url(https://i.ibb.co/rRygsNkC/Screenshot-20251125-105049.jpg)', backgroundSize: 'cover', backgroundPosition: 'center'}}>
             {/* Sunday Messages */}
             <div className="flex flex-col items-center mb-6">
               <div className="bg-black bg-opacity-30 text-white px-4 py-1 rounded-full text-sm mb-4">
@@ -75,24 +79,28 @@
 
             <div className="space-y-2 mb-6">
               <div className="flex justify-end">
-                <div className="bg-green-100 rounded-2xl px-3 py-2 shadow-sm inline-block">
+                <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{borderRadius: '16px 0 16px 16px'}}>
                   <div className="flex items-end gap-2">
-                    <p className="text-gray-900 text-sm">How are you doing today</p>
+                    <p className="text-gray-900 text-base break-words">How are you doing today</p>
                     <div className="flex items-center gap-1 whitespace-nowrap">
                       <span className="text-xs text-gray-500">22:53</span>
-                      <Check className="w-4 h-4 text-green-600" />
+                      <div className="w-4 h-4 text-green-600">
+                        <Check />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end">
-                <div className="bg-green-100 rounded-2xl px-3 py-2 shadow-sm inline-block">
+                <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{borderRadius: '16px 0 16px 16px'}}>
                   <div className="flex items-end gap-2">
-                    <p className="text-gray-900 text-sm">Hope you're doing great as well</p>
+                    <p className="text-gray-900 text-base break-words">Hope you're doing great as well</p>
                     <div className="flex items-center gap-1 whitespace-nowrap">
                       <span className="text-xs text-gray-500">23:44</span>
-                      <Check className="w-4 h-4 text-green-600" />
+                      <div className="w-4 h-4 text-green-600">
+                        <Check />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -107,13 +115,43 @@
             </div>
 
             <div className="flex justify-end">
-              <div className="bg-green-100 rounded-2xl px-3 py-2 shadow-sm inline-block" style={{maxWidth: '280px'}}>
-                <p className="text-gray-900 text-sm mb-0 leading-tight">
+              <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{maxWidth: '280px', borderRadius: '16px 0 16px 16px'}}>
+                <p className="text-gray-900 text-base mb-0 leading-tight break-words">
                   Hello, this is a longer message that should force the layout into a multi-line state so we can test the inline timestamp feature.
                 </p>
                 <div className="flex items-center justify-end gap-1 -mt-3">
                   <span className="text-xs text-gray-500">05:57</span>
-                  <Check className="w-4 h-4 text-green-600" />
+                  <div className="w-4 h-4 text-green-600">
+                    <Check />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-2">
+              <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{maxWidth: '280px', borderRadius: '16px 0 16px 16px'}}>
+                <div className="flex items-end gap-2">
+                  <p className="text-gray-900 text-base break-words">ffffffffffffffffffffffffffff</p>
+                  <div className="flex items-center gap-1 whitespace-nowrap">
+                    <span className="text-xs text-gray-500">05:58</span>
+                    <div className="w-4 h-4 text-green-600">
+                      <Check />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-2">
+              <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{maxWidth: '280px', borderRadius: '16px 0 16px 16px'}}>
+                <p className="text-gray-900 text-base mb-0 leading-tight break-words">
+                  Ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                </p>
+                <div className="flex items-center justify-end gap-1 -mt-3">
+                  <span className="text-xs text-gray-500">05:59</span>
+                  <div className="w-4 h-4 text-green-600">
+                    <Check />
+                  </div>
                 </div>
               </div>
             </div>
@@ -123,7 +161,7 @@
     }
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<TelegramChatUI />);
+    root.render(<App />);
   </script>
 </body>
 </html>
