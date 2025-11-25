@@ -108,6 +108,8 @@
         }
       }, [messages]);
 
+      const SHORT_MESSAGE_MAX_CHARS = 50;
+
       return (
         <div className="flex flex-col h-screen w-full bg-white">
           {/* Header */}
@@ -141,7 +143,7 @@
 
             <div className="space-y-2 mb-6 w-full">
               <div className="flex justify-end w-full">
-                <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{borderRadius: '16px 0 16px 16px', maxWidth: '320px'}}> {/* INCREASED MAX-WIDTH */}
+                <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{borderRadius: '16px 0 16px 16px', maxWidth: '320px'}}> {/* STATIC SHORT MESSAGE - 320px */}
                   <div className="flex items-end gap-2">
                     <p className="text-gray-900 text-base break-words">How are you doing today</p>
                     <div className="flex items-center gap-1 whitespace-nowrap flex-shrink-0">
@@ -155,7 +157,7 @@
               </div>
 
               <div className="flex justify-end w-full">
-                <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{borderRadius: '16px 0 16px 16px', maxWidth: '320px'}}> {/* INCREASED MAX-WIDTH */}
+                <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{borderRadius: '16px 0 16px 16px', maxWidth: '320px'}}> {/* STATIC SHORT MESSAGE - 320px */}
                   <div className="flex items-end gap-2">
                     <p className="text-gray-900 text-base break-words">Hope you're doing great as well</p>
                     <div className="flex items-center gap-1 whitespace-nowrap flex-shrink-0">
@@ -177,13 +179,15 @@
             </div>
 
             {messages.filter(m => m.date === "Today").map((message, index) => {
-              const isLongMessage = message.text.length > 50;
+              const isLongMessage = message.text.length > SHORT_MESSAGE_MAX_CHARS;
+              const maxBubbleWidth = isLongMessage ? '280px' : '320px'; // CONDITIONAL WIDTH LOGIC
               
               return (
                 <div key={message.id} className="flex justify-end w-full" style={{marginTop: index > 0 ? '0.5rem' : '0'}}>
-                  <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{borderRadius: '16px 0 16px 16px', maxWidth: '320px'}}> {/* INCREASED MAX-WIDTH */}
+                  <div className="bg-white px-3 py-2 shadow-sm inline-block" style={{borderRadius: '16px 0 16px 16px', maxWidth: maxBubbleWidth}}>
                     {isLongMessage ? (
                       <>
+                        {/* Multi-line (long) message logic uses 280px max-width */}
                         <p className="text-gray-900 text-base mb-0 leading-tight break-words">
                           {message.text}
                         </p>
@@ -196,6 +200,7 @@
                       </>
                     ) : (
                       <div className="flex items-end gap-2">
+                        {/* Single-line (short) message logic uses 320px max-width */}
                         <p className="text-gray-900 text-base break-words">{message.text}</p>
                         <div className="flex items-center gap-1 whitespace-nowrap flex-shrink-0">
                           <span className="text-xs text-gray-500">{message.time}</span>
