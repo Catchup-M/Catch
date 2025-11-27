@@ -61,7 +61,7 @@
     .slide-in-right {
       animation: slideInRight 0.3s ease-out forwards;
     }
-    /* --- Custom Bubble Styles (MODIFIED: max-width for new messages) --- */
+    /* --- Custom Bubble Styles (RETAINED for static message #2) --- */
     .stretched-bubble-content {
         display: flex;
         flex-direction: column;
@@ -154,11 +154,9 @@
       const [isChatOpen, setIsChatOpen] = useState(false);
       const [selectedChat, setSelectedChat] = useState(null);
       
-      // NEW STATE: Message input text
       const [messageInput, setMessageInput] = useState('');
       const hasText = messageInput.trim().length > 0;
       
-      // NEW STATE: Array to hold all messages (including new ones)
       const [messages, setMessages] = useState([]);
       
       const messageInputRef = useRef(null);
@@ -186,26 +184,22 @@
       };
       // ------------------------------------
       
-      // NEW FUNCTION: Handles changes in the contentEditable div
       const handleInputChange = () => {
         if (messageInputRef.current) {
+          // InnerText automatically handles the contenteditable content including line breaks
           setMessageInput(messageInputRef.current.innerText);
         }
       };
       
-      // NEW FUNCTION: Handles sending the message
       const handleSend = () => {
         if (!hasText) return;
 
         const now = new Date();
         const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
         
-        // Use a placeholder text to achieve a very long message for testing the stretched bubble
-        const text = messageInput.trim();
-        
         const newMessage = {
           id: Date.now(),
-          text: text, 
+          text: messageInput.trim(),
           timestamp: timeString,
         };
 
@@ -248,23 +242,25 @@
         setSelectedChat(null);
       };
 
-      // MODIFIED: Helper component to render a new message using the "Stretched Auto-Wrap" pattern
+      // UPDATED HELPER: Uses the flexible multi-line bubble structure (like static message #2)
       const SentMessageBubble = ({ text, timestamp }) => (
         <div className="flex justify-end">
           <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
-            <div className="stretched-bubble-content">
-                {/* Message Text Area */}
-                <span className="text-gray-900 text-[15px] message-text-wrapper" style={{ whiteSpace: 'pre-wrap' }}>
-                    {text}
-                </span>
-                {/* Timestamp and Checkmark on a new line, aligned right */}
-                <div className="auto-wrap-timestamp-line">
-                    <div className="auto-wrap-timestamp-block">
-                        <span className="text-[11px] text-gray-600">{timestamp}</span>
-                        <Check size={16} className="text-blue-500" strokeWidth={2} />
-                    </div>
-                </div>
-            </div>
+              <div className="stretched-bubble-content">
+                  {/* Applying whiteSpace: 'pre-wrap' ensures both natural wrapping and preserved manual line breaks */}
+                  <span 
+                      className="text-gray-900 text-[15px] message-text-wrapper" 
+                      style={{ whiteSpace: 'pre-wrap' }}
+                  >
+                      {text}
+                  </span>
+                  <div className="auto-wrap-timestamp-line">
+                      <div className="auto-wrap-timestamp-block">
+                          <span className="text-[11px] text-gray-600">{timestamp}</span>
+                          <Check size={16} className="text-blue-500" strokeWidth={2} />
+                      </div>
+                  </div>
+              </div>
           </div>
         </div>
       );
@@ -400,14 +396,13 @@
                     {/* Messages Container */}
                     <div className="space-y-2 max-w-xl ml-auto">
                       
-                      {/* 1. Custom two-line message (Fixed Breaks & Overflow Prevention) */}
+                      {/* STATIC BUBBLES (RETAINED) */}
+                      {/* 1. Fixed Breaks */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 shadow-sm" style={{ maxWidth: '90%' }}>
                           <div className="text-gray-900 text-[15px]">
-                            {/* Line 1: Fffff... */}
                             <span>Fffffffffffffffffffffffffffffffffffffffffffffffffff</span>
                             <br/>
-                            {/* Line 2 with inline timestamp */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                               <span>fffffffffffffffffff</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, marginLeft: '8px' }}>
@@ -419,7 +414,7 @@
                         </div>
                       </div>
 
-                      {/* 2. STRETCHED BUBBLE / SHORTER HEIGHT MESSAGE (Auto-Wrap) - STATIC EXAMPLE */}
+                      {/* 2. Auto-Wrap / Shorter Height */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
                             <div className="stretched-bubble-content">
@@ -436,12 +431,12 @@
                         </div>
                       </div>
 
-                      {/* 3. Short message with inline timestamp (Forced Inline) */}
+                      {/* 3. Forced Inline (Short) */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
                             <span className="text-gray-900 text-[15px]" style={{ whiteSpace: 'nowrap' }}>How are you doing today</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex-shrink: 0 }}>
                               <span className="text-[11px] text-gray-600">22:53</span>
                               <Check size={16} className="text-blue-500" strokeWidth={2} />
                             </div>
@@ -449,12 +444,12 @@
                         </div>
                       </div>
 
-                      {/* 4. Another short message with inline timestamp (Forced Inline) */}
+                      {/* 4. Forced Inline (Short) */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
                             <span className="text-gray-900 text-[15px]" style={{ whiteSpace: 'nowrap' }}>Hope you're doing great as well</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex-shrink: 0 }}>
                               <span className="text-[11px] text-gray-600">23:44</span>
                               <Check size={16} className="text-blue-500" strokeWidth={2} />
                             </div>
@@ -462,7 +457,7 @@
                         </div>
                       </div>
                       
-                      {/* DYNAMIC MESSAGES: Now using the Stretched Auto-Wrap format */}
+                      {/* NEW MESSAGES: Display dynamic messages here (using the improved component) */}
                       {messages.map((msg) => (
                         <SentMessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} />
                       ))}
