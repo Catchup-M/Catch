@@ -8,13 +8,6 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    [contenteditable][data-empty="true"]:before {
-      content: attr(data-placeholder);
-      color: #9ca3af;
-      pointer-events: none;
-    }
-  </style>
 </head>
 <body>
   <div id="root"></div>
@@ -110,9 +103,14 @@
 
           {/* Chat view that slides in from right */}
           <div 
-            className={`absolute top-0 left-0 w-full h-full bg-gray-100 transition-transform duration-300 ease-in-out flex flex-col ${
+            className={`absolute top-0 left-0 w-full h-full transition-transform duration-300 ease-in-out flex flex-col ${
               showChat ? 'translate-x-0' : 'translate-x-full'
             }`}
+            style={{
+              backgroundImage: 'url(https://i.ibb.co/fzG6R49y/Screenshot-20251125-105049.jpg)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
           >
             {/* Chat Header */}
             <div className="flex items-center justify-between p-3 bg-white shadow-sm">
@@ -179,6 +177,13 @@
                   )}
                 </button>
 
+                <style>{`
+                  [contenteditable][data-empty="true"]:before {
+                    content: attr(data-placeholder);
+                    color: #9ca3af;
+                    pointer-events: none;
+                  }
+                `}</style>
                 <div
                   ref={inputRef}
                   contentEditable
