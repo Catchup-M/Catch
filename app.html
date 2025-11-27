@@ -8,28 +8,26 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    [contenteditable][data-empty="true"]:before {
+      content: attr(data-placeholder);
+      color: #9ca3af;
+      pointer-events: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useRef } = React;
-
-    // Lucide React Icons as inline SVG components
-    const ArrowLeft = ({ size = 24 }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <line x1="19" y1="12" x2="5" y2="12"></line>
-        <polyline points="12 19 5 12 12 5"></polyline>
-      </svg>
-    );
-
-    const MoreVertical = ({ size = 24 }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="1"></circle>
-        <circle cx="12" cy="5" r="1"></circle>
-        <circle cx="12" cy="19" r="1"></circle>
-      </svg>
-    );
 
     function TelegramNotification() {
       const [showChat, setShowChat] = useState(false);
@@ -119,7 +117,7 @@
 
           {/* Chat view that slides in from right */}
           <div 
-            className={`absolute top-0 left-0 w-full h-full bg-gray-100 transition-transform duration-300 ease-in-out flex flex-col ${
+            className={`absolute top-0 left-0 w-full h-full bg-gray-100 transition-transform duration-300 ease-in-out flex flex-col overflow-hidden ${
               showChat ? 'translate-x-0' : 'translate-x-full'
             }`}
           >
@@ -132,7 +130,10 @@
                   onClick={() => setShowChat(false)}
                   className="text-gray-600 hover:text-gray-900"
                 >
-                  <ArrowLeft size={22} />
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                  </svg>
                 </button>
                 
                 {/* Avatar, name and status group */}
@@ -152,13 +153,17 @@
               
               {/* Right side: More options */}
               <button className="text-gray-600 hover:text-gray-900">
-                <MoreVertical size={22} />
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
               </button>
             </div>
 
             {/* Chat area */}
             <div 
-              className="flex-1 p-4 overflow-y-auto"
+              className="flex-1 p-4 overflow-y-auto hide-scrollbar"
               style={{
                 backgroundImage: 'url(https://i.ibb.co/fzG6R49y/Screenshot-20251125-105049.jpg)',
                 backgroundSize: 'cover',
@@ -171,13 +176,6 @@
 
             {/* Input Bar */}
             <div className={`bg-white flex-shrink-0 ${!replyingTo ? 'border-t border-gray-200' : ''} relative`}>
-              <style dangerouslySetInnerHTML={{__html: `
-                [contenteditable][data-empty="true"]:before {
-                  content: attr(data-placeholder);
-                  color: #9ca3af;
-                  pointer-events: none;
-                }
-              `}} />
               <div className="w-full max-w-2xl mx-auto flex items-center p-2 gap-1">
                 <button onClick={toggleEmojiPicker} className="p-2 flex-shrink-0 self-end">
                   {showEmojiPicker ? (
@@ -257,7 +255,8 @@
       );
     }
 
-    ReactDOM.render(<TelegramNotification />, document.getElementById('root'));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<TelegramNotification />);
   </script>
 </body>
 </html>
