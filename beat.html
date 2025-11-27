@@ -299,9 +299,9 @@
 
                     {/* Messages */}
                     <div className="space-y-2 max-w-xl ml-auto">
-                      {/* Custom two-line message with forced break and inline timestamp */}
+                      {/* NO GAP MESSAGE: Custom two-line message with forced break and inline timestamp */}
                       <div className="flex justify-end">
-                        <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
+                        <div className="bg-white rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div className="text-gray-900 text-[15px]">
                             <span>Fffffffffffffffffffffffffffffffffffffffffffffffffff</span>
                             <br/>
@@ -322,24 +322,24 @@
                         </div>
                       </div>
 
-                      {/* Method 1: Multi-line message with timestamp on separate line - NORMAL TEXT */}
+                      {/* NORMAL MESSAGE: Multi-line message with inline timestamp on last line */}
                       <div className="flex justify-end">
-                        <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
-                          <p className="text-gray-900 text-[15px]" style={{ marginBottom: '2px' }}>
+                        <div className="bg-white rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
+                          <div className="text-gray-900 text-[15px]">
                             Hello, this is a longer message that should force the layout into a multi-line state so we can test the inline timestamp feature.
-                          </p>
-                          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '4px' }}>
-                            <span className="text-[11px] text-gray-600">22:28</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end', marginTop: '2px' }}>
+                              <span className="text-[11px] text-gray-600">22:28</span>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Method 2: Short message with inline timestamp - NORMAL TEXT */}
                       <div className="flex justify-end">
-                        <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
+                        <div className="bg-white rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ 
                             display: 'flex', 
                             justifyContent: 'space-between', 
@@ -359,7 +359,7 @@
 
                       {/* Method 2: Another short message with inline timestamp - NORMAL TEXT */}
                       <div className="flex justify-end">
-                        <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
+                        <div className="bg-white rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ 
                             display: 'flex', 
                             justifyContent: 'space-between', 
