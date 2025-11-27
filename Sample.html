@@ -61,7 +61,8 @@
     .slide-in-right {
       animation: slideInRight 0.3s ease-out forwards;
     }
-    /* --- Custom Bubble Styles (RETAINED for static message #2) --- */
+    /* --- Custom Bubble Styles --- */
+    /* This style forces the bubble content to take full width inside the bubble, allowing flex behaviors */
     .stretched-bubble-content {
         display: flex;
         flex-direction: column;
@@ -69,6 +70,7 @@
         width: 100%;
         min-width: 0;
     }
+    /* This wrapper ensures the text itself wraps naturally */
     .message-text-wrapper {
         width: 100%; 
         overflow-wrap: break-word; 
@@ -76,17 +78,18 @@
         text-align: left; 
         margin-bottom: 2px;
     }
+    /* This line wrapper contains the final text segment and the timestamp/status */
     .auto-wrap-timestamp-line {
         display: flex;
         align-items: flex-end;
-        justify-content: flex-end; 
+        justify-content: flex-end; /* Pushes content to the right edge */
         width: 100%;
     }
     .auto-wrap-timestamp-block {
         display: flex;
         align-items: center;
         gap: 4px;
-        flex-shrink: 0; 
+        flex-shrink: 0; /* Prevents timestamp from shrinking */
         line-height: 1; 
         padding-left: 8px; 
         color: #6b7280; 
@@ -186,7 +189,6 @@
       
       const handleInputChange = () => {
         if (messageInputRef.current) {
-          // InnerText automatically handles the contenteditable content including line breaks
           setMessageInput(messageInputRef.current.innerText);
         }
       };
@@ -205,7 +207,6 @@
 
         setMessages((prevMessages) => [...prevMessages, newMessage]);
         
-        // Clear the contenteditable div and state
         if (messageInputRef.current) {
           messageInputRef.current.innerText = '';
         }
@@ -242,26 +243,24 @@
         setSelectedChat(null);
       };
 
-      // UPDATED HELPER: Uses the flexible multi-line bubble structure (like static message #2)
+      // UPDATED HELPER COMPONENT: Uses the auto-wrap/stretched bubble pattern
       const SentMessageBubble = ({ text, timestamp }) => (
         <div className="flex justify-end">
-          <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
-              <div className="stretched-bubble-content">
-                  {/* Applying whiteSpace: 'pre-wrap' ensures both natural wrapping and preserved manual line breaks */}
-                  <span 
-                      className="text-gray-900 text-[15px] message-text-wrapper" 
-                      style={{ whiteSpace: 'pre-wrap' }}
-                  >
-                      {text}
-                  </span>
-                  <div className="auto-wrap-timestamp-line">
-                      <div className="auto-wrap-timestamp-block">
-                          <span className="text-[11px] text-gray-600">{timestamp}</span>
-                          <Check size={16} className="text-blue-500" strokeWidth={2} />
-                      </div>
-                  </div>
-              </div>
-          </div>
+            <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
+                <div className="stretched-bubble-content">
+                    {/* Text wrapper to allow natural word wrapping over multiple lines */}
+                    <span className="text-gray-900 text-[15px] message-text-wrapper">
+                        {text}
+                    </span>
+                    {/* Final line containing timestamp, forced to the right edge */}
+                    <div className="auto-wrap-timestamp-line">
+                        <div className="auto-wrap-timestamp-block">
+                            <span className="text-[11px] text-gray-600">{timestamp}</span>
+                            <Check size={16} className="text-blue-500" strokeWidth={2} />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
       );
 
@@ -270,7 +269,7 @@
         <div className="w-full h-screen bg-white flex flex-col relative overflow-hidden">
           {isLoggedIn ? (
             <>
-              {/* Main Messages View */}
+              {/* Main Messages View (RETAINED) */}
               <div className={isChatOpen ? 'slide-out-left' : ''}>
                 {/* Header (Messages View) */}
                 <div className="flex items-center justify-between px-4 py-3 shadow-sm">
@@ -330,7 +329,7 @@
                 </div>
               </div>
 
-              {/* Floating Action Button Component */}
+              {/* Floating Action Button Component (RETAINED) */}
               <FloatingActionButton 
                 isPopupOpen={isPopupOpen}
                 isMenuOpen={isMenuOpen}
@@ -352,10 +351,9 @@
                   onTouchStart={handleTouchStart}
                   onTouchEnd={handleTouchEnd}
                 >
-                  {/* Updated Chat Header */}
+                  {/* Updated Chat Header (RETAINED) */}
                   <header className="bg-white shadow-sm">
                     <div className="flex items-center justify-between px-3 py-2.5">
-                      {/* Left section - Back button and Avatar */}
                       <div className="flex items-center gap-4">
                         <button 
                           onClick={handleBackFromChat}
@@ -365,7 +363,6 @@
                         </button>
                         
                         <div className="flex items-center gap-2">
-                          {/* Avatar */}
                           <div className="w-11 h-11 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-lg overflow-hidden">
                             <img 
                               src={selectedChat.avatarImage} 
@@ -375,7 +372,6 @@
                             />
                           </div>
                           
-                          {/* Name and Status */}
                           <div className="flex flex-col">
                             <h1 className="text-[19px] font-semibold text-gray-900">{selectedChat.name}</h1>
                             <p className="text-[13px] text-gray-500">{selectedChat.lastSeen}</p>
@@ -383,7 +379,6 @@
                         </div>
                       </div>
                       
-                      {/* Right section - More options */}
                       <button className="text-gray-600 hover:text-gray-800 transition-colors">
                         <MoreVertical />
                       </button>
@@ -396,13 +391,14 @@
                     {/* Messages Container */}
                     <div className="space-y-2 max-w-xl ml-auto">
                       
-                      {/* STATIC BUBBLES (RETAINED) */}
-                      {/* 1. Fixed Breaks */}
+                      {/* 1. Custom two-line message (Fixed Breaks & Overflow Prevention) */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 shadow-sm" style={{ maxWidth: '90%' }}>
                           <div className="text-gray-900 text-[15px]">
+                            {/* Line 1: Fffff... */}
                             <span>Fffffffffffffffffffffffffffffffffffffffffffffffffff</span>
                             <br/>
+                            {/* Line 2 with inline timestamp */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                               <span>fffffffffffffffffff</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, marginLeft: '8px' }}>
@@ -414,7 +410,7 @@
                         </div>
                       </div>
 
-                      {/* 2. Auto-Wrap / Shorter Height */}
+                      {/* 2. STRETCHED BUBBLE / SHORTER HEIGHT MESSAGE (Auto-Wrap) - This is the standard we're adopting */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
                             <div className="stretched-bubble-content">
@@ -431,12 +427,12 @@
                         </div>
                       </div>
 
-                      {/* 3. Forced Inline (Short) */}
+                      {/* 3. Short message with inline timestamp (Forced Inline) - RETAINED for visual variety */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
                             <span className="text-gray-900 text-[15px]" style={{ whiteSpace: 'nowrap' }}>How are you doing today</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex-shrink: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                               <span className="text-[11px] text-gray-600">22:53</span>
                               <Check size={16} className="text-blue-500" strokeWidth={2} />
                             </div>
@@ -444,12 +440,12 @@
                         </div>
                       </div>
 
-                      {/* 4. Forced Inline (Short) */}
+                      {/* 4. Another short message with inline timestamp (Forced Inline) - RETAINED for visual variety */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
                             <span className="text-gray-900 text-[15px]" style={{ whiteSpace: 'nowrap' }}>Hope you're doing great as well</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flex-shrink: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
                               <span className="text-[11px] text-gray-600">23:44</span>
                               <Check size={16} className="text-blue-500" strokeWidth={2} />
                             </div>
@@ -457,7 +453,7 @@
                         </div>
                       </div>
                       
-                      {/* NEW MESSAGES: Display dynamic messages here (using the improved component) */}
+                      {/* NEW MESSAGES: Now using the robust auto-wrap/stretched bubble SentMessageBubble component */}
                       {messages.map((msg) => (
                         <SentMessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} />
                       ))}
@@ -531,13 +527,13 @@
                 </div>
               )}
 
-              {/* Contact Popup Component */}
+              {/* Contact Popup Component (RETAINED) */}
               <ContactPopup 
                 isPopupOpen={isPopupOpen}
                 onClose={() => setIsPopupOpen(false)}
               />
 
-              {/* Menu Component */}
+              {/* Menu Component (RETAINED) */}
               <MenuOverlay 
                 isMenuOpen={isMenuOpen}
                 onClose={() => setIsMenuOpen(false)}
