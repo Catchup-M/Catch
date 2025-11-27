@@ -60,7 +60,7 @@
     .slide-in-right {
       animation: slideInRight 0.3s ease-out forwards;
     }
-    /* Custom Bubble Styles for Message 2 */
+    /* Custom Bubble Styles for Message 2 (No longer used for #5 but kept for #2) */
     .stretched-bubble-content {
         display: flex;
         flex-direction: column;
@@ -354,7 +354,7 @@
                         </div>
                       </div>
 
-                      {/* 2. STRETCHED BUBBLE / SHORTER HEIGHT MESSAGE (Auto-Wrap) */}
+                      {/* 2. STRETCHED BUBBLE / SHORTER HEIGHT MESSAGE (Auto-Wrap) - Uses full width logic */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
                             <div className="stretched-bubble-content">
@@ -397,22 +397,22 @@
                         </div>
                       </div>
                       
-                      {/* 5. NEW Bubble (Updated): Combined text with auto-wrapping and inline timestamp */}
+                      {/* 5. NEW Bubble (Updated for proximity): Uses inner flex-end logic to place timestamp next to text */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
-                            <div className="stretched-bubble-content">
-                                {/* Combined Text: "How are you doing today I really hope you are okay! I hope you're fine!" */}
-                                <span className="text-gray-900 text-[15px] message-text-wrapper">
-                                    How are you doing today I really hope you are okay! I hope you're fine!
-                                </span>
-                                {/* Timestamp placed at the end of the last line of text */}
-                                <div className="auto-wrap-timestamp-line">
-                                    <div className="auto-wrap-timestamp-block">
-                                        <span className="text-[11px] text-gray-600">22:02</span>
-                                        <Check size={16} className="text-blue-500" strokeWidth={2} />
-                                    </div>
-                                </div>
+                          {/* Use flex on the inner content. flex-end ensures the entire content block aligns to the right. */}
+                          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                            {/* The span holds all the text. It will take up the remaining space on the last line before the timestamp. */}
+                            <span className="text-gray-900 text-[15px]" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                                How are you doing today I really hope you are okay! I hope you're fine!
+                            </span>
+                            
+                            {/* Timestamp Block: Ensures the time and checkmark stick together. flex-shrink: 0 prevents it from moving to a new line too early. */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, marginLeft: '8px', paddingBottom: '2px' }}>
+                                <span className="text-[11px] text-gray-600">22:02</span>
+                                <Check size={16} className="text-blue-500" strokeWidth={2} />
                             </div>
+                          </div>
                         </div>
                       </div>
                       
