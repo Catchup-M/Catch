@@ -392,14 +392,13 @@
                     {/* Messages Container */}
                     <div className="space-y-2 max-w-xl ml-auto">
                       
-                      {/* 1. Custom two-line message (Fixed Breaks & Overflow Prevention) */}
+                      {/* STATIC BUBBLES (RETAINED) */}
+                      {/* 1. Fixed Breaks */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 shadow-sm" style={{ maxWidth: '90%' }}>
                           <div className="text-gray-900 text-[15px]">
-                            {/* Line 1: Fffff... */}
                             <span>Fffffffffffffffffffffffffffffffffffffffffffffffffff</span>
                             <br/>
-                            {/* Line 2 with inline timestamp */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                               <span>fffffffffffffffffff</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, marginLeft: '8px' }}>
@@ -411,7 +410,7 @@
                         </div>
                       </div>
 
-                      {/* 2. STRETCHED BUBBLE / SHORTER HEIGHT MESSAGE (Auto-Wrap) */}
+                      {/* 2. Auto-Wrap / Shorter Height */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
                             <div className="stretched-bubble-content">
@@ -428,7 +427,7 @@
                         </div>
                       </div>
 
-                      {/* 3. Short message with inline timestamp (Forced Inline) */}
+                      {/* 3. Forced Inline (Short) */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
@@ -441,7 +440,7 @@
                         </div>
                       </div>
 
-                      {/* 4. Another short message with inline timestamp (Forced Inline) */}
+                      {/* 4. Forced Inline (Short) */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
@@ -485,25 +484,20 @@
                         data-placeholder="Message..."
                         suppressContentEditableWarning={true}
                         onInput={handleInputChange}
-                        // Allow sending with Enter key if desired (optional)
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault(); // Prevents adding a new line in single-line mode
-                            // handleSend(); // Uncomment this line to enable Enter-to-send
-                          }
-                        }}
                       />
                       
-                      {/* Attachment Button */}
-                      <button className="p-2 flex-shrink-0 self-end rounded-full">
-                        <svg fill="#6b7280" viewBox="0 0 32 32" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                          <g transform="rotate(-42, 16, 16)">
-                            <path d="M13.17,29.9a4,4,0,0,1-2.83-1.17L4.69,23.07a4,4,0,0,1,0-5.66L18.83,3.27a4.1,4.1,0,0,1,5.66,0L27.31,6.1a4,4,0,0,1,0,5.66L16,23.07a4,4,0,0,1-5.66-5.66l9.2-9.19L21,9.64l-9.19,9.19a2,2,0,0,0,2.83,2.83L25.9,10.34a2,2,0,0,0,0-2.83L23.07,4.69a2,2,0,0,0-2.83,0L6.1,18.83a2,2,0,0,0,0,2.83l5.66,5.65a2,2,0,0,0,2.83,0l12-12L28,16.71l-12,12A4,4,0,0,1,13.17,29.9Z"></path>
-                          </g>
-                        </svg>
-                      </button>
+                      {/* Attachment Button (Hides when text is present) */}
+                      {!hasText && (
+                        <button className="p-2 flex-shrink-0 self-end rounded-full transition-opacity duration-200">
+                          <svg fill="#6b7280" viewBox="0 0 32 32" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                            <g transform="rotate(-42, 16, 16)">
+                              <path d="M13.17,29.9a4,4,0,0,1-2.83-1.17L4.69,23.07a4,4,0,0,1,0-5.66L18.83,3.27a4.1,4.1,0,0,1,5.66,0L27.31,6.1a4,4,0,0,1,0,5.66L16,23.07a4,4,0,0,1-5.66-5.66l9.2-9.19L21,9.64l-9.19,9.19a2,2,0,0,0,2.83,2.83L25.9,10.34a2,2,0,0,0,0-2.83L23.07,4.69a2,2,0,0,0-2.83,0L6.1,18.83a2,2,0,0,0,0,2.83l5.66,5.65a2,2,0,0,0,2.83,0l12-12L28,16.71l-12,12A4,4,0,0,1,13.17,29.9Z"></path>
+                            </g>
+                          </svg>
+                        </button>
+                      )}
                       
-                      {/* SEND BUTTON (Uses your custom SVG and visibility logic) */}
+                      {/* SEND BUTTON (Visible only when text is present) */}
                       <button 
                         onClick={handleSend} 
                         className="p-2 flex-shrink-0 self-end transition-all duration-200"
@@ -518,9 +512,9 @@
                         </svg>
                       </button>
 
-                      {/* OLD VOICE BUTTON (Only visible if send button is hidden) */}
+                      {/* VOICE BUTTON (Only visible if send button is hidden) */}
                       {!hasText && (
-                        <button className="p-2 flex-shrink-0 self-end hover:bg-gray-100 rounded-full transition-colors">
+                        <button className="p-2 flex-shrink-0 self-end hover:bg-gray-100 rounded-full transition-opacity duration-200">
                           <svg viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="1.8" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
                             <rect x="8" y="2" width="8" height="13" rx="4"></rect>
                             <path d="M20,10v1a8,8,0,0,1-8,8h0a8,8,0,0,1-8-8V10"></path>
