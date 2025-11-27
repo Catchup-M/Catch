@@ -215,7 +215,12 @@
 
               {/* Chat View */}
               {isChatOpen && selectedChat && (
-                <div className="fixed inset-0 bg-gray-100 z-50 flex flex-col slide-in-right">
+                <div className="fixed inset-0 z-50 flex flex-col slide-in-right" style={{
+                  backgroundImage: 'url(https://i.ibb.co/0RMJ2TK3/Screenshot-20251125-105049.jpg)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}>
                   {/* Updated Chat Header */}
                   <header className="bg-white shadow-sm">
                     <div className="flex items-center justify-between px-3 py-2.5">
@@ -255,7 +260,7 @@
                   </header>
 
                   {/* Chat Area */}
-                  <div className="flex-1 bg-gray-100 overflow-y-auto p-4">
+                  <div className="flex-1 overflow-y-auto p-4">
                     <div className="text-center text-gray-400 text-sm">
                       Your messages will appear here
                     </div>
