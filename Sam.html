@@ -397,19 +397,27 @@
                         </div>
                       </div>
 
-                      {/* 5. NEW MESSAGE: Longer text with inline timestamp (Forced Inline - Modified Max Width/Gap) */}
+                      {/* 5. NEW Bubble: "How are you doing today I really hope you are okay!" */}
                       <div className="flex justify-end">
-                        <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '12px' }}>
-                            <span className="text-gray-900 text-[15px]" style={{ whiteSpace: 'nowrap' }}>How are you doing today hope every where is going well what about your family hope they are</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                              <span className="text-[11px] text-gray-600">00:05</span>
-                              <Check size={16} className="text-blue-500" strokeWidth={2} />
+                        {/* // FEATURE: Bubble Constraint - Set to 90% via style to ensure long strings fit without overflow */}
+                        <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 shadow-sm" style={{ maxWidth: '90%' }}>
+                          <div className="text-gray-900 text-[15px]">
+                            {/* // Line 1 Text */}
+                            <span>How are you doing today I really hope you are okay!</span>
+                            {/* // FEATURE: Line Break - Manual <br/> forces the text onto a new line */}
+                            <br/>
+                            {/* // Line 2: Uses flex to position text on the left and timestamp on the right */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                              <span>I hope you're fine!</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, marginLeft: '8px' }}>
+                                <span className="text-[11px] text-gray-600">22:02</span>
+                                {/* // FEATURE: Checkmark - Inline with timestamp */}
+                                <Check size={16} className="text-blue-500" strokeWidth={2} />
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-
                     </div>
                   </div>
 
