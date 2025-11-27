@@ -61,7 +61,7 @@
     .slide-in-right {
       animation: slideInRight 0.3s ease-out forwards;
     }
-    /* --- Custom Bubble Styles (RETAINED) --- */
+    /* --- Custom Bubble Styles (MODIFIED: max-width for new messages) --- */
     .stretched-bubble-content {
         display: flex;
         flex-direction: column;
@@ -200,9 +200,12 @@
         const now = new Date();
         const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
         
+        // Use a placeholder text to achieve a very long message for testing the stretched bubble
+        const text = messageInput.trim();
+        
         const newMessage = {
           id: Date.now(),
-          text: messageInput.trim(),
+          text: text, 
           timestamp: timeString,
         };
 
@@ -245,17 +248,22 @@
         setSelectedChat(null);
       };
 
-      // Helper component to render a new message using the "Forced Inline" pattern
+      // MODIFIED: Helper component to render a new message using the "Stretched Auto-Wrap" pattern
       const SentMessageBubble = ({ text, timestamp }) => (
         <div className="flex justify-end">
-          <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
-            {/* Using the Short Message (Forced Inline) pattern: display: flex, space-between, whiteSpace: 'pre-wrap' */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px', whiteSpace: 'pre-wrap' }}>
-              <span className="text-gray-900 text-[15px]" style={{ whiteSpace: 'pre-wrap' }}>{text}</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                <span className="text-[11px] text-gray-600">{timestamp}</span>
-                <Check size={16} className="text-blue-500" strokeWidth={2} />
-              </div>
+          <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
+            <div className="stretched-bubble-content">
+                {/* Message Text Area */}
+                <span className="text-gray-900 text-[15px] message-text-wrapper" style={{ whiteSpace: 'pre-wrap' }}>
+                    {text}
+                </span>
+                {/* Timestamp and Checkmark on a new line, aligned right */}
+                <div className="auto-wrap-timestamp-line">
+                    <div className="auto-wrap-timestamp-block">
+                        <span className="text-[11px] text-gray-600">{timestamp}</span>
+                        <Check size={16} className="text-blue-500" strokeWidth={2} />
+                    </div>
+                </div>
             </div>
           </div>
         </div>
@@ -392,13 +400,14 @@
                     {/* Messages Container */}
                     <div className="space-y-2 max-w-xl ml-auto">
                       
-                      {/* STATIC BUBBLES (RETAINED) */}
-                      {/* 1. Fixed Breaks */}
+                      {/* 1. Custom two-line message (Fixed Breaks & Overflow Prevention) */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 shadow-sm" style={{ maxWidth: '90%' }}>
                           <div className="text-gray-900 text-[15px]">
+                            {/* Line 1: Fffff... */}
                             <span>Fffffffffffffffffffffffffffffffffffffffffffffffffff</span>
                             <br/>
+                            {/* Line 2 with inline timestamp */}
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                               <span>fffffffffffffffffff</span>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, marginLeft: '8px' }}>
@@ -410,7 +419,7 @@
                         </div>
                       </div>
 
-                      {/* 2. Auto-Wrap / Shorter Height */}
+                      {/* 2. STRETCHED BUBBLE / SHORTER HEIGHT MESSAGE (Auto-Wrap) - STATIC EXAMPLE */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
                             <div className="stretched-bubble-content">
@@ -427,7 +436,7 @@
                         </div>
                       </div>
 
-                      {/* 3. Forced Inline (Short) */}
+                      {/* 3. Short message with inline timestamp (Forced Inline) */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
@@ -440,7 +449,7 @@
                         </div>
                       </div>
 
-                      {/* 4. Forced Inline (Short) */}
+                      {/* 4. Another short message with inline timestamp (Forced Inline) */}
                       <div className="flex justify-end">
                         <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[85%] shadow-sm">
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '8px' }}>
@@ -453,7 +462,7 @@
                         </div>
                       </div>
                       
-                      {/* NEW MESSAGES: Display dynamic messages here */}
+                      {/* DYNAMIC MESSAGES: Now using the Stretched Auto-Wrap format */}
                       {messages.map((msg) => (
                         <SentMessageBubble key={msg.id} text={msg.text} timestamp={msg.timestamp} />
                       ))}
