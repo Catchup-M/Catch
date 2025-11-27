@@ -396,30 +396,26 @@
                           </div>
                         </div>
                       </div>
-
-                      {/* 5. NEW Bubble: "How are you doing today I really hope you are okay! I hope you're fine!" (UPDATED: FORCED SINGLE LINE) */}
+                      
+                      {/* 5. NEW Bubble (Updated): Combined text with auto-wrapping and inline timestamp */}
                       <div className="flex justify-end">
-                        {/* // FEATURE: Bubble Constraint - Set to 90% via style to ensure long strings fit without overflow */}
-                        <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 shadow-sm" style={{ maxWidth: '90%' }}>
-                          {/* Use flex to align the text and timestamp on one line. The text will push the timestamp right. */}
-                          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', minWidth: 0 }}>
-                            {/* Primary Text Span: white-space: nowrap prevents line breaks mid-sentence. */}
-                            <span 
-                              className="text-gray-900 text-[15px]" 
-                              style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                            >
-                              How are you doing today I really hope you are okay! I hope you're fine!
-                            </span>
-                            
-                            {/* Timestamp Block: flex-shrink: 0 ensures it doesn't try to shrink */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-                              <span className="text-[11px] text-gray-600">22:02</span>
-                              {/* // FEATURE: Checkmark - Inline with timestamp */}
-                              <Check size={16} className="text-blue-500" strokeWidth={2} />
+                        <div className="bg-[#D9F8C4] rounded-lg px-3 py-2 max-w-[95%] shadow-sm">
+                            <div className="stretched-bubble-content">
+                                {/* Combined Text: "How are you doing today I really hope you are okay! I hope you're fine!" */}
+                                <span className="text-gray-900 text-[15px] message-text-wrapper">
+                                    How are you doing today I really hope you are okay! I hope you're fine!
+                                </span>
+                                {/* Timestamp placed at the end of the last line of text */}
+                                <div className="auto-wrap-timestamp-line">
+                                    <div className="auto-wrap-timestamp-block">
+                                        <span className="text-[11px] text-gray-600">22:02</span>
+                                        <Check size={16} className="text-blue-500" strokeWidth={2} />
+                                    </div>
+                                </div>
                             </div>
-                          </div>
                         </div>
                       </div>
+                      
                     </div>
                   </div>
 
