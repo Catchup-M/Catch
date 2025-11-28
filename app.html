@@ -130,14 +130,12 @@
           </div>
 
           {/* Chat view that slides in from right */}
-          {/* FIX 1: Ensure this container is a full-height flex column */}
           <div 
             className={`absolute top-0 left-0 w-full h-full bg-gray-100 transition-transform duration-300 ease-in-out flex flex-col ${
               showChat ? 'translate-x-0' : 'translate-x-full'
             }`}
           >
             {/* Chat Header */}
-            {/* FIX 2: Add flex-shrink-0 to keep header fixed at the top */}
             <div className="flex items-center justify-between p-3 bg-white shadow-sm flex-shrink-0">
               {/* Left side: Back button and profile */}
               <div className="flex items-center gap-2">
@@ -146,7 +144,6 @@
                   onClick={() => setShowChat(false)}
                   className="text-gray-600 hover:text-gray-900"
                 >
-                  {/* FIX 3: Corrected capitalization from <Arrowleft /> to <ArrowLeft /> */}
                   <ArrowLeft /> 
                 </button>
                 
@@ -172,7 +169,6 @@
             </div>
 
             {/* Chat area */}
-            {/* FIX 4: Use flex-1 to make it take up all available space and handle scrolling */}
             <div 
               className="flex-1 p-4 overflow-y-auto hide-scrollbar"
               style={{
@@ -231,9 +227,9 @@
             </div>
 
             {/* Input Bar */}
-            {/* FIX 5: Add flex-shrink-0 to keep the input bar fixed at the bottom */}
             <div className={`bg-white flex-shrink-0 ${!replyingTo ? 'border-t border-gray-200' : ''} relative`}>
-              <div className="w-full max-w-2xl mx-auto flex items-center p-2 gap-1">
+              {/* FIX: Changed p-2 to py-1 px-2 to reduce vertical padding and prevent overflow */}
+              <div className="w-full max-w-2xl mx-auto flex items-center py-1 px-2 gap-1"> 
                 <button onClick={toggleEmojiPicker} className="p-2 flex-shrink-0 self-end">
                   {showEmojiPicker ? (
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 432 384">
@@ -303,12 +299,9 @@
             </div>
 
             {/* Emoji Picker */}
-            {/* FIX 6: Add flex-shrink-0 to keep the picker fixed at the bottom */}
             <div className="bg-gray-100 flex-shrink-0 overflow-hidden transition-all duration-300 ease-in-out" style={{ height: showEmojiPicker ? emojiPickerHeight : 0 }}>
               <div className="w-full max-w-2xl mx-auto h-full p-4">
-                <div className="grid grid-cols-8 gap-2">
-                    {/* Placeholder content for the emoji picker */}
-                </div>
+                <div className="grid grid-cols-8 gap-2"></div>
               </div>
             </div>
           </div>
