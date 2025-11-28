@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram Notification</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <title>Telegram Notification UI</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     [contenteditable][data-empty="true"]:before {
@@ -28,6 +28,21 @@
 
   <script type="text/babel">
     const { useState, useRef } = React;
+
+    const ArrowLeft = () => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    );
+
+    const MoreVertical = () => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="1"></circle>
+        <circle cx="12" cy="5" r="1"></circle>
+        <circle cx="12" cy="19" r="1"></circle>
+      </svg>
+    );
 
     function TelegramNotification() {
       const [showChat, setShowChat] = useState(false);
@@ -61,7 +76,6 @@
         const isEmpty = text === '';
         e.currentTarget.setAttribute('data-empty', isEmpty.toString());
         
-        // Reset cursor to start when empty
         if (isEmpty && inputRef.current) {
           inputRef.current.textContent = '';
           const range = document.createRange();
@@ -89,7 +103,7 @@
       };
 
       return (
-        <div className="relative w-full h-screen overflow-hidden bg-white">
+        <div className="relative w-full h-screen overflow-hidden bg-white max-w-md mx-auto">
           {/* Main notification view */}
           <div className="flex items-center justify-between p-4 bg-white">
             {/* Left side: Avatar and text */}
@@ -130,10 +144,7 @@
                   onClick={() => setShowChat(false)}
                   className="text-gray-600 hover:text-gray-900"
                 >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                  </svg>
+                  <ArrowLeft />
                 </button>
                 
                 {/* Avatar, name and status group */}
@@ -153,11 +164,7 @@
               
               {/* Right side: More options */}
               <button className="text-gray-600 hover:text-gray-900">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="1"></circle>
-                  <circle cx="12" cy="5" r="1"></circle>
-                  <circle cx="12" cy="19" r="1"></circle>
-                </svg>
+                <MoreVertical />
               </button>
             </div>
 
@@ -171,7 +178,52 @@
                 backgroundRepeat: 'no-repeat'
               }}
             >
-              <p className="text-gray-400 text-center text-sm">No messages yet</p>
+              {/* Sample messages */}
+              <div className="flex flex-col gap-1 items-end max-w-full">
+                {/* Message 1 */}
+                <div className="bg-white rounded-2xl px-3 py-2 max-w-[85%] shadow-sm">
+                  <div className="flex items-end gap-2 whitespace-nowrap">
+                    <span className="text-gray-900 text-sm">How</span>
+                    <span className="text-[11px] text-gray-500 flex items-center gap-1 flex-shrink-0">
+                      17:32
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32"><path fill="#595959" d="M28.28 6.28L11 23.563l-7.28-7.28l-1.44 1.437l8 8l.72.686l.72-.687l18-18l-1.44-1.44z"/></svg>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Message 2 */}
+                <div className="bg-white rounded-2xl px-3 py-2 max-w-[85%] shadow-sm">
+                  <div className="flex items-end gap-2 whitespace-nowrap">
+                    <span className="text-gray-900 text-sm">How are you doing</span>
+                    <span className="text-[11px] text-gray-500 flex items-center gap-1 flex-shrink-0">
+                      17:32
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32"><path fill="#595959" d="M28.28 6.28L11 23.563l-7.28-7.28l-1.44 1.437l8 8l.72.686l.72-.687l18-18l-1.44-1.44z"/></svg>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Message 3 */}
+                <div className="bg-white rounded-2xl px-3 py-2 max-w-[85%] shadow-sm">
+                  <div className="flex items-end gap-2 whitespace-nowrap">
+                    <span className="text-gray-900 text-sm">How are you doing today bro</span>
+                    <span className="text-[11px] text-gray-500 flex items-center gap-1 flex-shrink-0">
+                      17:33
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32"><path fill="#595959" d="M28.28 6.28L11 23.563l-7.28-7.28l-1.44 1.437l8 8l.72.686l.72-.687l18-18l-1.44-1.44z"/></svg>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Message 4 */}
+                <div className="bg-white rounded-2xl px-3 py-2 max-w-[85%] shadow-sm">
+                  <div className="flex items-end gap-2 whitespace-nowrap">
+                    <span className="text-gray-900 text-sm">How are you feeling today bro</span>
+                    <span className="text-[11px] text-gray-500 flex items-center gap-1 flex-shrink-0">
+                      17:33
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 32 32"><path fill="#595959" d="M28.28 6.28L11 23.563l-7.28-7.28l-1.44 1.437l8 8l .72.686l.72-.687l18-18l-1.44-1.44z"/></svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Input Bar */}
@@ -255,8 +307,7 @@
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<TelegramNotification />);
+    ReactDOM.render(<TelegramNotification />, document.getElementById('root'));
   </script>
 </body>
 </html>
