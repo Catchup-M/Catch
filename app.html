@@ -24,6 +24,7 @@
     #app {
       height: 100vh;
       height: 100dvh; /* Dynamic viewport height for mobile */
+      padding-bottom: 8px; /* Push footer up slightly */
     }
   </style>
 </head>
@@ -129,7 +130,7 @@
         ></div>
         
         <!-- Content -->
-        <div class="relative p-4" style="z-index: 1;">
+        <div class="relative p-4 min-h-full flex items-center justify-center" style="z-index: 1;">
           <div class="text-center text-gray-400 text-sm">
             Chat messages would appear here
           </div>
