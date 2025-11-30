@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Telegram Chat UI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -14,10 +14,21 @@
     [contenteditable]:focus {
       outline: none;
     }
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      height: 100dvh; /* Dynamic viewport height for mobile */
+    }
+    #app {
+      height: 100vh;
+      height: 100dvh; /* Dynamic viewport height for mobile */
+    }
   </style>
 </head>
 <body>
-  <div id="app" class="max-w-2xl mx-auto bg-white h-screen relative overflow-hidden">
+  <div id="app" class="max-w-2xl mx-auto bg-white relative overflow-hidden">
     <!-- Main Chat List -->
     <div id="chatList" class="absolute inset-0 bg-white transition-transform duration-300">
       <!-- Header -->
@@ -310,4 +321,3 @@
   </script>
 </body>
 </html>
-
