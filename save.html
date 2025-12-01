@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Footer Chat Bar</title>
+  <title>Chat App</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
+    * {
+      -webkit-overflow-scrolling: touch;
+    }
+    
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -15,6 +19,9 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
     }
 
     /* Main content area */
@@ -34,6 +41,7 @@
       display: flex;
       align-items: center;
       border: none;
+      z-index: 10;
     }
 
     /* Left SVG (attachment) */
@@ -52,7 +60,6 @@
       height: 29px;
       margin-left: 10px;
       flex-shrink: 0;
-      stroke: #666666;
       cursor: pointer;
     }
 
@@ -94,93 +101,288 @@
       pointer-events: none;
       line-height: 43px;
     }
+
+    .input-box:focus:empty:before {
+      content: "Message";
+      color: #aaa;
+    }
+
+    /* Sliding animations */
+    .conversation-list {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #fff;
+      transition: transform 0.3s;
+      z-index: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .conversation-list.-translate-x-full {
+      transform: translateX(-100%);
+    }
+
+    .chat-view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #f5f5f5;
+      transition: transform 0.3s;
+      transform: translateX(100%);
+      z-index: 2;
+    }
+
+    .chat-view.translate-x-0 {
+      transform: translateX(0);
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useRef } = React;
 
     function FooterChatBar() {
       const [isKeyboardActive, setIsKeyboardActive] = useState(false);
+      const [showChat, setShowChat] = useState(false);
+      const [hasText, setHasText] = useState(false);
+      const inputRef = useRef(null);
 
       const toggleKeyboard = () => {
         setIsKeyboardActive(!isKeyboardActive);
       };
 
+      const openChat = () => {
+        setShowChat(true);
+      };
+
+      const closeChat = () => {
+        setShowChat(false);
+      };
+
+      const handleInput = (e) => {
+        const text = e.currentTarget.textContent.trim();
+        setHasText(text.length > 0);
+      };
+
+      const handleBlur = (e) => {
+        if (e.currentTarget.textContent.trim() === '') {
+          e.currentTarget.textContent = '';
+        }
+      };
+
+      const handleSend = () => {
+        if (inputRef.current && hasText) {
+          inputRef.current.innerHTML = '';
+          setHasText(false);
+          inputRef.current.blur();
+        }
+      };
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          handleSend();
+        }
+      };
+
       return (
-        <div style={{ margin: 0, fontFamily: 'Arial, sans-serif', background: '#f5f5f5', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-          {/* Chat Header */}
-          <div className="bg-white border-b" style={{ background: 'white', borderBottom: '1px solid #e5e7eb' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px' }}>
-              <button style={{ padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: '4px' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="19" y1="12" x2="5" y2="12"></line>
-                  <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-              </button>
-              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fb923c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <span style={{ color: 'white', fontSize: '16px', fontWeight: '600' }}>DS</span>
+        <div style={{ margin: 0, fontFamily: 'Arial, sans-serif', background: '#f5f5f5', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'fixed', width: '100%', top: 0, left: 0 }}>
+          {/* Conversation List */}
+          <div className={`conversation-list ${showChat ? '-translate-x-full' : ''}`}>
+            {/* Header with Search */}
+            <div style={{ background: '#fff', borderBottom: '1px solid #e5e5e5' }}>
+              <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', gap: '12px' }}>
+                <button style={{ padding: '8px', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                  </svg>
+                </button>
+                <div style={{ flex: 1, display: 'flex', alignItems: 'center', background: '#f5f5f5', borderRadius: '20px', padding: '8px 16px', gap: '8px' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                  <input 
+                    type="text" 
+                    placeholder="Search" 
+                    style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontSize: '16px', color: '#333' }}
+                  />
+                </div>
               </div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <h3 style={{ fontWeight: '600', color: '#111827', fontSize: '18px', margin: 0 }}>Daddy Steve</h3>
-                <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>last seen 11/3/2025</p>
+            </div>
+
+            {/* Conversation Item */}
+            <div 
+              onClick={openChat}
+              style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                padding: '12px 16px', 
+                gap: '12px', 
+                cursor: 'pointer',
+                position: 'relative'
+              }}
+            >
+              <div style={{ 
+                width: '52px', 
+                height: '52px', 
+                borderRadius: '50%', 
+                background: '#fb923c', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                flexShrink: 0 
+              }}>
+                <span style={{ color: 'white', fontSize: '20px', fontWeight: '600' }}>DS</span>
               </div>
-              <button style={{ padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: '4px' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="1"></circle>
-                  <circle cx="12" cy="5" r="1"></circle>
-                  <circle cx="12" cy="19" r="1"></circle>
-                </svg>
-              </button>
+              <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
+                  <h3 style={{ fontWeight: '600', color: '#111', fontSize: '16px', margin: 0 }}>Daddy Steve</h3>
+                  <span style={{ color: '#999', fontSize: '13px', flexShrink: 0 }}>Oct 27</span>
+                </div>
+                <p style={{ color: '#666', fontSize: '14px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  Daddy Steve joined Telegram
+                </p>
+                {/* Bottom border that starts after avatar */}
+                <div style={{ 
+                  position: 'absolute', 
+                  bottom: '-12px', 
+                  left: 0, 
+                  right: '-16px', 
+                  height: '1px', 
+                  background: '#f0f0f0' 
+                }}></div>
+              </div>
             </div>
           </div>
 
-          <div className="content" style={{ 
-            backgroundImage: 'url(https://i.ibb.co/fzG6R49y/Screenshot-20251125-105049.jpg)', 
-            backgroundSize: 'cover', 
-            backgroundPosition: 'center', 
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: '#f5f5f5'
-          }}>
-          </div>
+          {/* Chat View */}
+          <div className={`chat-view ${showChat ? 'translate-x-0' : ''}`}>
+            {/* Chat Header */}
+            <div style={{ background: '#fff', borderBottom: '1px solid #e5e5e5' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px' }}>
+                <button 
+                  onClick={closeChat}
+                  style={{ padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: '4px' }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                  </svg>
+                </button>
+                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fb923c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ color: 'white', fontSize: '16px', fontWeight: '600' }}>DS</span>
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <h3 style={{ fontWeight: '600', color: '#111827', fontSize: '18px', margin: 0 }}>Daddy Steve</h3>
+                  <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>last seen 11/3/2025</p>
+                </div>
+                <button style={{ padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: '4px' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="12" cy="5" r="1"></circle>
+                    <circle cx="12" cy="19" r="1"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
 
-          <div className="footer">
-            {/* Left SVG icon (attachment) */}
-            <svg className="left-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <g className="attachment-clip-outline">
-                <path fill="#666666" fillRule="evenodd" d="M8 7.308c0-.558.186-1.434.659-2.14C9.1 4.504 9.779 4 10.88 4c1.134 0 1.88.499 2.373 1.155c.52.692.746 1.555.746 2.153v7.54a.8.8 0 0 1-.073.223c-.065.141-.166.3-.3.447c-.269.295-.61.482-1.002.482c-.436 0-.777-.18-1.02-.433c-.263-.274-.355-.574-.355-.72v-7.56a1 1 0 0 0-2 0v7.56c0 .75.358 1.527.912 2.105A3.38 3.38 0 0 0 12.625 18c1.085 0 1.93-.532 2.48-1.134c.517-.567.895-1.335.895-2.02V7.308c0-1.001-.35-2.292-1.146-3.354C14.029 2.856 12.716 2 10.88 2c-1.867 0-3.13.925-3.885 2.055A6.13 6.13 0 0 0 6 7.308v8.695C6 19.402 9.003 22 12.5 22c3.498 0 6.5-2.597 6.5-5.997V7a1 1 0 1 0-2 0v9.003C17 18.123 15.079 20 12.5 20C9.923 20 8 18.122 8 16.003z" className="Vector" clipRule="evenodd"/>
-              </g>
-            </svg>
+            <div style={{ 
+              flex: 1,
+              backgroundImage: 'url(https://i.ibb.co/fzG6R49y/Screenshot-20251125-105049.jpg)', 
+              backgroundSize: 'cover', 
+              backgroundPosition: 'center', 
+              backgroundRepeat: 'no-repeat',
+              backgroundColor: '#f5f5f5',
+              marginBottom: '58px',
+              overflowY: 'auto',
+              overflowX: 'hidden'
+            }}>
+            </div>
 
-            {/* Input wrapper */}
-            <div className="input-box-wrapper">
-              {isKeyboardActive ? (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 384" onClick={toggleKeyboard} style={{ cursor: 'pointer' }}>
-                  <path fill="#666666" d="M384 43q18 0 30.5 12.5T427 85v214q0 17-12.5 29.5T384 341H43q-18 0-30.5-12.5T0 299V85q0-17 12.5-29.5T43 43h341zm-192 64v42h43v-42h-43zm0 64v42h43v-42h-43zm-64-64v42h43v-42h-43zm0 64v42h43v-42h-43zm-21 42v-42H64v42h43zm0-64v-42H64v42h43zm192 150v-43H128v43h171zm0-86v-42h-43v42h43zm0-64v-42h-43v42h43zm64 64v-42h-43v42h43zm0-64v-42h-43v42h43z"/>
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" onClick={toggleKeyboard} style={{ cursor: 'pointer' }}>
-                  <path fill="#666666" d="M464 256a208 208 0 1 0-416 0a208 208 0 1 0 416 0M0 256a256 256 0 1 1 512 0a256 256 0 1 1-512 0m177.3 63.4c15 15.6 41.1 32.6 78.7 32.6s63.7-17 78.7-32.6c9.2-9.6 24.4-9.9 33.9-.7s9.9 24.4.7 33.9c-22.1 23-60 47.4-113.3 47.4s-91.2-24.4-113.3-47.4c-9.2-9.6-8.9-24.8.7-33.9s24.8-8.9 33.9.7M144 208a32 32 0 1 1 64 0a32 32 0 1 1-64 0m192-32a32 32 0 1 1 0 64a32 32 0 1 1 0-64"/>
+            <div className="footer">
+              {/* Left SVG icon (attachment) */}
+              <svg className="left-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <g className="attachment-clip-outline">
+                  <path fill="#666666" fillRule="evenodd" d="M8 7.308c0-.558.186-1.434.659-2.14C9.1 4.504 9.779 4 10.88 4c1.134 0 1.88.499 2.373 1.155c.52.692.746 1.555.746 2.153v7.54a.8.8 0 0 1-.073.223c-.065.141-.166.3-.3.447c-.269.295-.61.482-1.002.482c-.436 0-.777-.18-1.02-.433c-.263-.274-.355-.574-.355-.72v-7.56a1 1 0 0 0-2 0v7.56c0 .75.358 1.527.912 2.105A3.38 3.38 0 0 0 12.625 18c1.085 0 1.93-.532 2.48-1.134c.517-.567.895-1.335.895-2.02V7.308c0-1.001-.35-2.292-1.146-3.354C14.029 2.856 12.716 2 10.88 2c-1.867 0-3.13.925-3.885 2.055A6.13 6.13 0 0 0 6 7.308v8.695C6 19.402 9.003 22 12.5 22c3.498 0 6.5-2.597 6.5-5.997V7a1 1 0 1 0-2 0v9.003C17 18.123 15.079 20 12.5 20C9.923 20 8 18.122 8 16.003z" className="Vector" clipRule="evenodd"/>
+                </g>
+              </svg>
+
+              {/* Input wrapper */}
+              <div className="input-box-wrapper">
+                {isKeyboardActive ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 384" onClick={toggleKeyboard} style={{ cursor: 'pointer' }}>
+                    <path fill="#666666" d="M384 43q18 0 30.5 12.5T427 85v214q0 17-12.5 29.5T384 341H43q-18 0-30.5-12.5T0 299V85q0-17 12.5-29.5T43 43h341zm-192 64v42h43v-42h-43zm0 64v42h43v-42h-43zm-64-64v42h43v-42h-43zm0 64v42h43v-42h-43zm-21 42v-42H64v42h43zm0-64v-42H64v42h43zm192 150v-43H128v43h171zm0-86v-42h-43v42h43zm0-64v-42h-43v42h43zm64 64v-42h-43v42h43zm0-64v-42h-43v42h43z"/>
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" onClick={toggleKeyboard} style={{ cursor: 'pointer' }}>
+                    <path fill="#666666" d="M464 256a208 208 0 1 0-416 0a208 208 0 1 0 416 0M0 256a256 256 0 1 1 512 0a256 256 0 1 1-512 0m177.3 63.4c15 15.6 41.1 32.6 78.7 32.6s63.7-17 78.7-32.6c9.2-9.6 24.4-9.9 33.9-.7s9.9 24.4.7 33.9c-22.1 23-60 47.4-113.3 47.4s-91.2-24.4-113.3-47.4c-9.2-9.6-8.9-24.8.7-33.9s24.8-8.9 33.9.7M144 208a32 32 0 1 1 64 0a32 32 0 1 1-64 0m192-32a32 32 0 1 1 0 64a32 32 0 1 1 0-64"/>
+                  </svg>
+                )}
+                <div 
+                  ref={inputRef}
+                  className="input-box" 
+                  contentEditable="true"
+                  onInput={handleInput}
+                  onBlur={handleBlur}
+                  onKeyDown={handleKeyDown}
+                  suppressContentEditableWarning={true}
+                ></div>
+              </div>
+
+              {/* Right SVG - Microphone (hidden when typing) */}
+              {!hasText && (
+                <svg 
+                  className="right-icon" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  viewBox="0 0 14 14"
+                >
+                  <g fill="none" stroke="#666666" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9.5 6.5a2.5 2.5 0 0 1-5 0V3a2.5 2.5 0 0 1 5 0Z"/>
+                    <path d="M12 7h0a4.49 4.49 0 0 1-4.5 4.5h-1A4.49 4.49 0 0 1 2 7h0m5 4.5v2"/>
+                  </g>
                 </svg>
               )}
-              <div className="input-box" contentEditable="true"></div>
-            </div>
 
-            {/* Right SVG */}
-            <svg className="right-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
-              <g fill="none" stroke="#666666" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9.5 6.5a2.5 2.5 0 0 1-5 0V3a2.5 2.5 0 0 1 5 0Z"/>
-                <path d="M12 7h0a4.49 4.49 0 0 1-4.5 4.5h-1A4.49 4.49 0 0 1 2 7h0m5 4.5v2"/>
-              </g>
-            </svg>
+              {/* Send Button (shown when typing) */}
+              {hasText && (
+                <button 
+                  onClick={handleSend}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    width: '25px',
+                    height: '29px',
+                    marginLeft: '10px',
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <svg viewBox="0 -0.5 21 21" width="29" height="29" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.61258 9L0.05132 1.31623C-0.22718 0.48074 0.63218 -0.28074 1.42809 0.09626L20.4281 9.0963C21.1906 9.4575 21.1906 10.5425 20.4281 10.9037L1.42809 19.9037C0.63218 20.2807 -0.22718 19.5193 0.05132 18.6838L2.61258 11H8.9873C9.5396 11 9.9873 10.5523 9.9873 10C9.9873 9.4477 9.5396 9 8.9873 9H2.61258z" fill="#3b82f6" fillRule="evenodd" clipRule="evenodd" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       );
     }
 
-    ReactDOM.render(<FooterChatBar />, document.getElementById('root'));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<FooterChatBar />);
   </script>
 </body>
 </html>
