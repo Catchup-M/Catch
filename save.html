@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Footer Chat Bar</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Main content area */
+    .content {
+      flex: 1;
+      padding: 12px 18px;
+    }
+
+    /* Footer Navbar */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      border: none;
+    }
+
+    /* Left SVG (attachment) */
+    .footer svg.left-icon {
+      width: 25px;
+      height: 29px;
+      margin-right: 10px;
+      flex-shrink: 0;
+      fill: #666666;
+      cursor: pointer;
+    }
+
+    /* Right SVG */
+    .footer svg.right-icon {
+      width: 25px;
+      height: 29px;
+      margin-left: 10px;
+      flex-shrink: 0;
+      stroke: #666666;
+      cursor: pointer;
+    }
+
+    /* Input wrapper (flex container for internal SVG and text) */
+    .input-box-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: #f1f1f1;
+      border-radius: 20px;
+      padding: 0 10px;
+      height: 43px;
+      box-sizing: border-box;
+    }
+
+    /* SVG inside input box */
+    .input-box-wrapper svg {
+      width: 21px;
+      height: 21px;
+      flex-shrink: 0;
+      margin-right: 10px;
+    }
+
+    /* Editable text area */
+    .input-box {
+      flex: 1;
+      font-size: 14px;
+      line-height: 43px;
+      outline: none;
+      border: none;
+      background: transparent;
+      min-height: 43px;
+    }
+
+    /* Placeholder styling */
+    .input-box:empty:before {
+      content: "Message";
+      color: #aaa;
+      pointer-events: none;
+      line-height: 43px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    function FooterChatBar() {
+      const [isKeyboardActive, setIsKeyboardActive] = useState(false);
+
+      const toggleKeyboard = () => {
+        setIsKeyboardActive(!isKeyboardActive);
+      };
+
+      return (
+        <div style={{ margin: 0, fontFamily: 'Arial, sans-serif', background: '#f5f5f5', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+          {/* Chat Header */}
+          <div className="bg-white border-b" style={{ background: 'white', borderBottom: '1px solid #e5e7eb' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px' }}>
+              <button style={{ padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: '4px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+              </button>
+              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#fb923c', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <span style={{ color: 'white', fontSize: '16px', fontWeight: '600' }}>DS</span>
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h3 style={{ fontWeight: '600', color: '#111827', fontSize: '18px', margin: 0 }}>Daddy Steve</h3>
+                <p style={{ color: '#6b7280', fontSize: '14px', margin: 0 }}>last seen 11/3/2025</p>
+              </div>
+              <button style={{ padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: '4px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div className="content" style={{ 
+            backgroundImage: 'url(https://i.ibb.co/fzG6R49y/Screenshot-20251125-105049.jpg)', 
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center', 
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: '#f5f5f5'
+          }}>
+          </div>
+
+          <div className="footer">
+            {/* Left SVG icon (attachment) */}
+            <svg className="left-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <g className="attachment-clip-outline">
+                <path fill="#666666" fillRule="evenodd" d="M8 7.308c0-.558.186-1.434.659-2.14C9.1 4.504 9.779 4 10.88 4c1.134 0 1.88.499 2.373 1.155c.52.692.746 1.555.746 2.153v7.54a.8.8 0 0 1-.073.223c-.065.141-.166.3-.3.447c-.269.295-.61.482-1.002.482c-.436 0-.777-.18-1.02-.433c-.263-.274-.355-.574-.355-.72v-7.56a1 1 0 0 0-2 0v7.56c0 .75.358 1.527.912 2.105A3.38 3.38 0 0 0 12.625 18c1.085 0 1.93-.532 2.48-1.134c.517-.567.895-1.335.895-2.02V7.308c0-1.001-.35-2.292-1.146-3.354C14.029 2.856 12.716 2 10.88 2c-1.867 0-3.13.925-3.885 2.055A6.13 6.13 0 0 0 6 7.308v8.695C6 19.402 9.003 22 12.5 22c3.498 0 6.5-2.597 6.5-5.997V7a1 1 0 1 0-2 0v9.003C17 18.123 15.079 20 12.5 20C9.923 20 8 18.122 8 16.003z" className="Vector" clipRule="evenodd"/>
+              </g>
+            </svg>
+
+            {/* Input wrapper */}
+            <div className="input-box-wrapper">
+              {isKeyboardActive ? (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 432 384" onClick={toggleKeyboard} style={{ cursor: 'pointer' }}>
+                  <path fill="#666666" d="M384 43q18 0 30.5 12.5T427 85v214q0 17-12.5 29.5T384 341H43q-18 0-30.5-12.5T0 299V85q0-17 12.5-29.5T43 43h341zm-192 64v42h43v-42h-43zm0 64v42h43v-42h-43zm-64-64v42h43v-42h-43zm0 64v42h43v-42h-43zm-21 42v-42H64v42h43zm0-64v-42H64v42h43zm192 150v-43H128v43h171zm0-86v-42h-43v42h43zm0-64v-42h-43v42h43zm64 64v-42h-43v42h43zm0-64v-42h-43v42h43z"/>
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" onClick={toggleKeyboard} style={{ cursor: 'pointer' }}>
+                  <path fill="#666666" d="M464 256a208 208 0 1 0-416 0a208 208 0 1 0 416 0M0 256a256 256 0 1 1 512 0a256 256 0 1 1-512 0m177.3 63.4c15 15.6 41.1 32.6 78.7 32.6s63.7-17 78.7-32.6c9.2-9.6 24.4-9.9 33.9-.7s9.9 24.4.7 33.9c-22.1 23-60 47.4-113.3 47.4s-91.2-24.4-113.3-47.4c-9.2-9.6-8.9-24.8.7-33.9s24.8-8.9 33.9.7M144 208a32 32 0 1 1 64 0a32 32 0 1 1-64 0m192-32a32 32 0 1 1 0 64a32 32 0 1 1 0-64"/>
+                </svg>
+              )}
+              <div className="input-box" contentEditable="true"></div>
+            </div>
+
+            {/* Right SVG */}
+            <svg className="right-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+              <g fill="none" stroke="#666666" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9.5 6.5a2.5 2.5 0 0 1-5 0V3a2.5 2.5 0 0 1 5 0Z"/>
+                <path d="M12 7h0a4.49 4.49 0 0 1-4.5 4.5h-1A4.49 4.49 0 0 1 2 7h0m5 4.5v2"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<FooterChatBar />, document.getElementById('root'));
+  </script>
+</body>
+</html>
