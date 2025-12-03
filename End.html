@@ -203,8 +203,8 @@
         setHasText(text.length > 0);
         
         setTimeout(() => {
-          if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+          if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
           }
         }, 100);
       };
@@ -240,8 +240,8 @@
       useEffect(() => {
         if (showChat && messages.length > 1) {
           setTimeout(() => {
-            if (chatContainerRef.current) {
-              chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            if (messagesEndRef.current) {
+              messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }
           }, 300);
         }
@@ -250,8 +250,8 @@
       useEffect(() => {
         if (showEmojiPicker && showChat) {
           setTimeout(() => {
-            if (chatContainerRef.current) {
-              chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            if (messagesEndRef.current) {
+              messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
             }
           }, 350);
         }
