@@ -215,7 +215,6 @@
       const inputRef = useRef(null);
       const messagesEndRef = useRef(null);
       const chatContainerRef = useRef(null);
-      const stickyDateRef = useRef(null);
 
       const toggleKeyboard = () => {
         setIsKeyboardActive(!isKeyboardActive);
@@ -236,23 +235,32 @@
           setIsKeyboardActive(false);
         }
         
-        // Scroll to bottom when input is focused (keyboard appears)
-        setTimeout(() => {
+        // Multiple scroll attempts to handle keyboard delay
+        const scrollToBottom = () => {
           if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
           }
-        }, 350);
+        };
+        
+        // Immediate scroll
+        scrollToBottom();
+        
+        // Additional scrolls with delays to catch keyboard appearance
+        setTimeout(scrollToBottom, 100);
+        setTimeout(scrollToBottom, 300);
+        setTimeout(scrollToBottom, 500);
       };
 
       const handleInput = (e) => {
         const text = e.currentTarget.textContent.trim();
         setHasText(text.length > 0);
         
+        // Scroll to bottom while typing
         setTimeout(() => {
           if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
           }
-        }, 100);
+        }, 50);
       };
 
       const handleBlur = (e) => {
@@ -302,43 +310,6 @@
           }, 350);
         }
       }, [showEmojiPicker, showChat]);
-
-      // Handle scroll to show/hide sticky date
-      useEffect(() => {
-        const scrollContainer = chatContainerRef.current;
-        if (!scrollContainer || !showChat) return;
-
-        const handleScroll = () => {
-          const dateSeparators = scrollContainer.querySelectorAll('.date-separator');
-          const stickyDate = stickyDateRef.current;
-          if (!stickyDate) return;
-
-          let shouldShowSticky = false;
-          let currentDateText = '';
-
-          dateSeparators.forEach(separator => {
-            const rect = separator.getBoundingClientRect();
-            const chatHeaderHeight = 60;
-            
-            if (rect.top < chatHeaderHeight && rect.bottom > 0) {
-              shouldShowSticky = true;
-              const badge = separator.querySelector('.date-badge');
-              if (badge) currentDateText = badge.textContent;
-            }
-          });
-
-          const stickyBadge = stickyDate.querySelector('.date-badge');
-          if (shouldShowSticky && stickyBadge) {
-            stickyBadge.textContent = currentDateText;
-            stickyDate.classList.add('visible');
-          } else {
-            stickyDate.classList.remove('visible');
-          }
-        };
-
-        scrollContainer.addEventListener('scroll', handleScroll);
-        return () => scrollContainer.removeEventListener('scroll', handleScroll);
-      }, [showChat]);
 
       return (
         <div style={{ margin: 0, fontFamily: 'Arial, sans-serif', background: '#f5f5f5', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'fixed', width: '100%', top: 0, left: 0 }}>
@@ -443,11 +414,6 @@
               </div>
             </div>
 
-            {/* Sticky Date at Top */}
-            <div className="sticky-date" ref={stickyDateRef}>
-              <div className="date-badge"></div>
-            </div>
-
             <div 
               ref={chatContainerRef}
               style={{ 
@@ -474,11 +440,6 @@
                 gap: '8px',
                 transition: 'padding-bottom 0.3s ease'
               }}>
-              {/* Date Separator */}
-              <div className="date-separator">
-                <div className="date-badge">Yesterday</div>
-              </div>
-
               {messages.map((message) => {
                 if (message.type === 'image') {
                   return (
