@@ -28,7 +28,7 @@
 
     .footer {
       position: fixed;
-      bottom: 56px;
+      bottom: 0;
       left: 0;
       right: 0;
       background: #fff;
@@ -42,7 +42,7 @@
     }
 
     .footer.emoji-open {
-      bottom: 356px;
+      bottom: 300px;
     }
 
     .footer svg.left-icon {
@@ -144,7 +144,7 @@
 
     .emoji-picker {
       position: fixed;
-      bottom: 56px;
+      bottom: 0;
       left: 0;
       right: 0;
       height: 300px;
@@ -203,8 +203,8 @@
         setHasText(text.length > 0);
         
         setTimeout(() => {
-          if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
           }
         }, 100);
       };
@@ -240,8 +240,8 @@
       useEffect(() => {
         if (showChat && messages.length > 1) {
           setTimeout(() => {
-            if (messagesEndRef.current) {
-              messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            if (chatContainerRef.current) {
+              chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
             }
           }, 300);
         }
@@ -250,8 +250,8 @@
       useEffect(() => {
         if (showEmojiPicker && showChat) {
           setTimeout(() => {
-            if (messagesEndRef.current) {
-              messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            if (chatContainerRef.current) {
+              chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
             }
           }, 350);
         }
@@ -380,7 +380,7 @@
               }}></div>
               <div style={{
                 padding: '16px',
-                paddingBottom: showEmojiPicker ? '420px' : '120px',
+                paddingBottom: showEmojiPicker ? '320px' : '70px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '8px',
@@ -611,3 +611,4 @@
   </script>
 </body>
 </html>
+
