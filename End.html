@@ -28,7 +28,7 @@
 
     .footer {
       position: fixed;
-      bottom: 0;
+      bottom: 56px;
       left: 0;
       right: 0;
       background: #fff;
@@ -42,7 +42,7 @@
     }
 
     .footer.emoji-open {
-      bottom: 300px;
+      bottom: 356px;
     }
 
     .footer svg.left-icon {
@@ -144,7 +144,7 @@
 
     .emoji-picker {
       position: fixed;
-      bottom: 0;
+      bottom: 56px;
       left: 0;
       right: 0;
       height: 300px;
@@ -196,6 +196,13 @@
           setShowEmojiPicker(false);
           setIsKeyboardActive(false);
         }
+        
+        // Scroll to bottom when input is focused (keyboard appears)
+        setTimeout(() => {
+          if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+          }
+        }, 350);
       };
 
       const handleInput = (e) => {
@@ -380,7 +387,7 @@
               }}></div>
               <div style={{
                 padding: '16px',
-                paddingBottom: showEmojiPicker ? '320px' : '70px',
+                paddingBottom: showEmojiPicker ? '420px' : '120px',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '8px',
@@ -562,6 +569,7 @@
                   onBlur={handleBlur}
                   onKeyDown={handleKeyDown}
                   onClick={handleInputClick}
+                  onFocus={handleInputClick}
                   suppressContentEditableWarning={true}
                 ></div>
               </div>
@@ -611,4 +619,3 @@
   </script>
 </body>
 </html>
-
