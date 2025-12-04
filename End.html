@@ -158,6 +158,44 @@
     .emoji-picker.show {
       transform: translateY(0);
     }
+
+    .date-separator {
+      display: flex;
+      justify-content: center;
+      padding: 12px 0;
+      position: relative;
+      z-index: 5;
+    }
+
+    .date-badge {
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .sticky-date {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .sticky-date.visible {
+      opacity: 1;
+    }
+
+    .sticky-date .date-badge {
+      background: rgba(0, 0, 0, 0.7);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -177,6 +215,7 @@
       const inputRef = useRef(null);
       const messagesEndRef = useRef(null);
       const chatContainerRef = useRef(null);
+      const stickyDateRef = useRef(null);
 
       const toggleKeyboard = () => {
         setIsKeyboardActive(!isKeyboardActive);
@@ -263,6 +302,43 @@
           }, 350);
         }
       }, [showEmojiPicker, showChat]);
+
+      // Handle scroll to show/hide sticky date
+      useEffect(() => {
+        const scrollContainer = chatContainerRef.current;
+        if (!scrollContainer || !showChat) return;
+
+        const handleScroll = () => {
+          const dateSeparators = scrollContainer.querySelectorAll('.date-separator');
+          const stickyDate = stickyDateRef.current;
+          if (!stickyDate) return;
+
+          let shouldShowSticky = false;
+          let currentDateText = '';
+
+          dateSeparators.forEach(separator => {
+            const rect = separator.getBoundingClientRect();
+            const chatHeaderHeight = 60;
+            
+            if (rect.top < chatHeaderHeight && rect.bottom > 0) {
+              shouldShowSticky = true;
+              const badge = separator.querySelector('.date-badge');
+              if (badge) currentDateText = badge.textContent;
+            }
+          });
+
+          const stickyBadge = stickyDate.querySelector('.date-badge');
+          if (shouldShowSticky && stickyBadge) {
+            stickyBadge.textContent = currentDateText;
+            stickyDate.classList.add('visible');
+          } else {
+            stickyDate.classList.remove('visible');
+          }
+        };
+
+        scrollContainer.addEventListener('scroll', handleScroll);
+        return () => scrollContainer.removeEventListener('scroll', handleScroll);
+      }, [showChat]);
 
       return (
         <div style={{ margin: 0, fontFamily: 'Arial, sans-serif', background: '#f5f5f5', height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'fixed', width: '100%', top: 0, left: 0 }}>
@@ -367,6 +443,11 @@
               </div>
             </div>
 
+            {/* Sticky Date at Top */}
+            <div className="sticky-date" ref={stickyDateRef}>
+              <div className="date-badge"></div>
+            </div>
+
             <div 
               ref={chatContainerRef}
               style={{ 
@@ -393,6 +474,11 @@
                 gap: '8px',
                 transition: 'padding-bottom 0.3s ease'
               }}>
+              {/* Date Separator */}
+              <div className="date-separator">
+                <div className="date-badge">Yesterday</div>
+              </div>
+
               {messages.map((message) => {
                 if (message.type === 'image') {
                   return (
