@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Photo Gallery Viewer</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      /* Prevent overall page scroll when viewing gallery */
+      overflow: hidden; 
+      overscroll-behavior: none; /* Prevents pull-to-refresh/browser navigation */
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useCallback } = React;
+
+    // --- SVG Icon Components ---
+
+    const ChevronLeft = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    );
+
+    const ChevronRight = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    );
+
+    const Share2 = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="18" cy="5" r="3"></circle>
+        <circle cx="6" cy="12" r="3"></circle>
+        <circle cx="18" cy="19" r="3"></circle>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+      </svg>
+    );
+
+    const MoreVertical = ({ size = 24 }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="1"></circle>
+        <circle cx="12" cy="5" r="1"></circle>
+        <circle cx="12" cy="19" r="1"></circle>
+      </svg>
+    );
+
+    // --- Main Gallery Component ---
+
+    const PhotoGalleryViewer = () => {
+      const [currentIndex, setCurrentIndex] = useState(0);
+      const [translateX, setTranslateX] = useState(0);
+      const [isDragging, setIsDragging] = useState(false);
+      const [isTransitioning, setIsTransitioning] = useState(false);
+      
+      // Zoom State
+      const [imageZoom, setImageZoom] = useState(1);
+      const [imageTranslateX, setImageTranslateX] = useState(0);
+      const [imageTranslateY, setImageTranslateY] = useState(0);
+      const [isPinching, setIsPinching] = useState(false);
+      const [lastTap, setLastTap] = useState(0);
+
+      const galleryTouchStartX = useRef(0);
+      const galleryTouchStartY = useRef(0);
+      
+      const imageRef = useRef(null);
+      const containerRef = useRef(null);
+      
+      // State for image-specific drag/pan
+      const panStartX = useRef(0);
+      const panStartY = useRef(0);
+
+      // Mock images - replace with your actual image URLs
+      const images = [
+        "https://i.ibb.co/C5b875C6/Screenshot-20250904-050841.jpg",
+        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+        "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800"
+      ];
+
+      const totalPhotos = images.length;
+
+      const getCurrentImage = (index) => {
+        return images[index];
+      };
+
+      const resetZoomState = useCallback(() => {
+        setImageZoom(1);
+        setImageTranslateX(0);
+        setImageTranslateY(0);
+      }, []);
+
+      // Reset zoom whenever the image index changes
+      React.useEffect(() => {
+        resetZoomState();
+      }, [currentIndex, resetZoomState]);
+
+
+      const getBounds = () => {
+        if (!containerRef.current) return { maxTranslateX: 0, maxTranslateY: 0 };
+        const containerWidth = containerRef.current.clientWidth;
+        const containerHeight = containerRef.current.clientHeight;
+        
+        // Use container size for calculation since the image fills the screen
+        const zoomedWidth = containerWidth * imageZoom;
+        const zoomedHeight = containerHeight * imageZoom;
+        
+        // Max translation is half the difference between zoomed size and container size
+        // Divided by zoom to account for the fact that translation is relative to the unscaled element
+        const maxTranslateX = Math.max(0, (zoomedWidth - containerWidth) / 2 / imageZoom);
+        const maxTranslateY = Math.max(0, (zoomedHeight - containerHeight) / 2 / imageZoom);
+        
+        return { maxTranslateX, maxTranslateY };
+      };
+
+
+      // --- Gallery Swipe Handlers (Attached to containerRef) ---
+
+      const handleGalleryStart = (clientX, clientY) => {
+        if (isTransitioning || imageZoom > 1) return; // Only allow swipe when not zoomed
+        
+        galleryTouchStartX.current = clientX;
+        galleryTouchStartY.current = clientY;
+        setIsDragging(true);
+      };
+
+      const handleGalleryMove = (e, clientX, clientY) => {
+        if (!isDragging || isTransitioning || imageZoom > 1) return;
+        
+        const currentX = clientX;
+        const diff = currentX - galleryTouchStartX.current;
+        setTranslateX(diff);
+        
+        // Prevent vertical scrolling if horizontal swipe is dominant
+        if (Math.abs(clientY - galleryTouchStartY.current) < Math.abs(diff)) {
+          e.preventDefault();
+        }
+      };
+
+      const handleGalleryEnd = () => {
+        if (!isDragging || imageZoom > 1) return;
+        
+        setIsDragging(false);
+        const swipeThreshold = 75; 
+
+        if (Math.abs(translateX) > swipeThreshold) {
+          setIsTransitioning(true);
+          if (translateX < 0 && currentIndex < totalPhotos - 1) {
+            setCurrentIndex(currentIndex + 1);
+          } else if (translateX > 0 && currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+          }
+          setTimeout(() => setIsTransitioning(false), 300);
+        }
+        
+        setTranslateX(0); // Reset gallery translation
+      };
+      
+      // --- Image Zoom/Pan Handlers (Attached to imageRef) ---
+
+      const handleImageTouchStart = (e) => {
+        e.stopPropagation(); // Crucial: Stop touch from reaching the gallery container's swipe logic
+
+        if (e.touches.length === 2) {
+          // Pinch start
+          setIsPinching(true);
+        } else if (e.touches.length === 1) {
+          // Pan start
+          panStartX.current = e.touches[0].clientX;
+          panStartY.current = e.touches[0].clientY;
+          window.lastTouchX = e.touches[0].clientX;
+          window.lastTouchY = e.touches[0].clientY;
+        }
+      };
+
+      const handleImageTouchMove = (e) => {
+        e.stopPropagation(); 
+        const { maxTranslateX, maxTranslateY } = getBounds();
+
+        if (e.touches.length === 2 && isPinching) {
+          // --- Pinch-to-Zoom Logic ---
+          const touch1 = e.touches[0];
+          const touch2 = e.touches[1];
+          const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+          
+          if (!window.initialPinchDistance) {
+            window.initialPinchDistance = distance;
+            window.initialZoom = imageZoom;
+          }
+          const scale = distance / window.initialPinchDistance;
+          const newZoom = Math.max(1, Math.min(3, window.initialZoom * scale));
+          
+          if (Math.abs(newZoom - imageZoom) > 0.01) {
+             setImageZoom(newZoom);
+             setImageTranslateX(0); // Center image when zooming/unzooming
+             setImageTranslateY(0);
+          }
+          e.preventDefault();
+        } else if (imageZoom > 1 && !isPinching && e.touches.length === 1) {
+          // --- Pan Logic ---
+          const currentX = e.touches[0].clientX;
+          const currentY = e.touches[0].clientY;
+          
+          const deltaX = currentX - window.lastTouchX;
+          const deltaY = currentY - window.lastTouchY;
+          
+          let newTranslateX = imageTranslateX + deltaX;
+          let newTranslateY = imageTranslateY + deltaY;
+
+          // Clamp translation within bounds
+          newTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, newTranslateX));
+          newTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, newTranslateY));
+          
+          setImageTranslateX(newTranslateX);
+          setImageTranslateY(newTranslateY);
+          
+          window.lastTouchX = currentX;
+          window.lastTouchY = currentY;
+          e.preventDefault(); 
+        }
+      };
+
+      const handleImageTouchEnd = (e) => {
+        e.stopPropagation(); 
+        if (isPinching) {
+          window.initialPinchDistance = null;
+          window.initialZoom = null;
+          setIsPinching(false);
+          // Clamp bounds after pinch ends
+          const { maxTranslateX, maxTranslateY } = getBounds();
+          let newTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, imageTranslateX));
+          let newTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, imageTranslateY));
+          setImageTranslateX(newTranslateX);
+          setImageTranslateY(newTranslateY);
+        }
+        panStartX.current = 0;
+        panStartY.current = 0;
+      };
+
+      // --- Mouse Pan Handlers (Attached to imageRef) ---
+      const [isPanning, setIsPanning] = useState(false);
+
+      const handleImageMouseDown = (e) => {
+        e.stopPropagation();
+        if (e.button !== 0 || imageZoom === 1) return; // Only pan when zoomed
+        
+        setIsPanning(true);
+        window.lastTouchX = e.clientX;
+        window.lastTouchY = e.clientY;
+      };
+
+      const handleImageMouseMove = (e) => {
+        if (!isPanning || imageZoom === 1) return;
+        
+        const { maxTranslateX, maxTranslateY } = getBounds();
+        const currentX = e.clientX;
+        const currentY = e.clientY;
+          
+        const deltaX = currentX - window.lastTouchX;
+        const deltaY = currentY - window.lastTouchY;
+          
+        let newTranslateX = imageTranslateX + deltaX;
+        let newTranslateY = imageTranslateY + deltaY;
+
+        // Clamp translation within bounds
+        newTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, newTranslateX));
+        newTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, newTranslateY));
+          
+        setImageTranslateX(newTranslateX);
+        setImageTranslateY(newTranslateY);
+          
+        window.lastTouchX = currentX;
+        window.lastTouchY = currentY;
+      };
+
+      const handleImageMouseUp = (e) => {
+        if (isPanning) {
+          setIsPanning(false);
+          // Clamp bounds after pan ends
+          const { maxTranslateX, maxTranslateY } = getBounds();
+          let newTranslateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, imageTranslateX));
+          let newTranslateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, imageTranslateY));
+          setImageTranslateX(newTranslateX);
+          setImageTranslateY(newTranslateY);
+        }
+      };
+      
+      const handleImageMouseLeave = () => {
+        if (isPanning) handleImageMouseUp();
+      };
+
+      
+      // --- Double-Tap Zoom Logic (Attached to imageRef) ---
+      const handleImageClick = (e) => {
+        e.stopPropagation(); // Prevent click from bubbling up
+
+        // Check for double-tap
+        const now = Date.now();
+        if (now - lastTap < 300) {
+          const newZoom = imageZoom === 1 ? 2 : 1;
+          setImageZoom(newZoom);
+          if (newZoom === 1) {
+            // Reset position on unzoom
+            setImageTranslateX(0);
+            setImageTranslateY(0);
+          } else {
+             // Center zoom
+             setImageTranslateX(0);
+             setImageTranslateY(0);
+          }
+        }
+        setLastTap(now);
+      };
+
+      const getWindowWidth = () => {
+        return containerRef.current ? containerRef.current.offsetWidth : window.innerWidth;
+      };
+
+
+      return (
+        <div className="relative w-full h-screen bg-black flex flex-col overflow-hidden">
+          {/* Header (Top Navigation & Info) - Fixed at top with high z-index */}
+          <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+            <div className="flex items-center justify-between px-4 py-4 pointer-events-auto">
+              <button className="text-white p-2 hover:bg-white/10 rounded-full transition">
+                <ChevronLeft size={28} />
+              </button>
+              
+              <div className="flex-1 text-center">
+                <h1 className="text-white text-xl font-semibold">Vavia's</h1>
+                <p className="text-white/80 text-sm">Nov 16 at 2:17 PM</p>
+              </div>
+              
+              <div className="flex gap-2">
+                <button className="text-white p-2 hover:bg-white/10 rounded-full transition">
+                  <Share2 size={24} />
+                </button>
+                <button className="text-white p-2 hover:bg-white/10 rounded-full transition">
+                  <MoreVertical size={24} />
+                </button>
+              </div>
+            </div>
+
+            {/* Photo Counter */}
+            <div className="flex justify-center pb-6">
+              <div className="bg-black/40 backdrop-blur-sm rounded-full px-4 py-2">
+                <p className="text-white text-sm font-medium">
+                  {currentIndex + 1} of {totalPhotos}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Image Container - Handles ONLY Gallery Swiping */}
+          <div 
+            ref={containerRef}
+            className={`flex-1 flex items-center justify-center relative select-none overflow-hidden ${imageZoom > 1 ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'}`}
+            // Gallery Swipe Event Handlers (Only triggered when not zoomed)
+            onTouchStart={(e) => { if(e.touches.length === 1) handleGalleryStart(e.touches[0].clientX, e.touches[0].clientY) }}
+            onTouchMove={(e) => { if(e.touches.length === 1) handleGalleryMove(e, e.touches[0].clientX, e.touches[0].clientY) }}
+            onTouchEnd={handleGalleryEnd}
+            onMouseDown={(e) => { if (e.button === 0) handleGalleryStart(e.clientX, e.clientY) }}
+            onMouseMove={(e) => handleGalleryMove(e, e.clientX, e.clientY)}
+            onMouseUp={handleGalleryEnd}
+            onMouseLeave={() => { if (isDragging) handleGalleryEnd() }}
+          >
+            {/* The image being viewed (current photo) */}
+            <div 
+              className="absolute inset-0 flex items-center justify-center transition-transform duration-300 ease-out"
+              style={{
+                // Gallery swipe scaling (only when not actively zoomed/panned)
+                transform: imageZoom === 1 && isDragging && translateX !== 0 
+                  ? `scale(${1 - Math.abs(translateX) / getWindowWidth() * 0.1})` 
+                  : 'scale(1)',
+                transition: isDragging || isPinching ? 'none' : 'transform 0.3s ease-out'
+              }}
+            >
+              <img 
+                ref={imageRef}
+                src={getCurrentImage(currentIndex)} 
+                alt={`Photo ${currentIndex + 1}`} 
+                // Image Class and Handlers for Zoom/Pan
+                className={`w-screen h-auto object-contain max-h-screen pointer-events-auto transition-transform duration-100 ease-out ${imageZoom > 1 ? 'cursor-move' : 'cursor-pointer'}`}
+                draggable="false"
+                style={{
+                  // Zoom and pan transformation
+                  transform: `translate(${imageTranslateX}px, ${imageTranslateY}px) scale(${imageZoom})`,
+                  // Disable transition when actively panning/pinching
+                  transition: isPinching || isPanning ? 'none' : 'transform 300ms ease-out' 
+                }}
+                // Zoom/Pan Handlers (ONLY on the image)
+                onTouchStart={handleImageTouchStart}
+                onTouchMove={handleImageTouchMove}
+                onTouchEnd={handleImageTouchEnd}
+                onMouseDown={handleImageMouseDown}
+                onMouseMove={handleImageMouseMove}
+                onMouseUp={handleImageMouseUp}
+                onMouseLeave={handleImageMouseLeave}
+                onClick={handleImageClick} 
+                onContextMenu={(e) => e.preventDefault()}
+              />
+            </div>
+
+            {/* Next Image - Slides from Right during gallery swipe (Only if not zoomed) */}
+            {currentIndex < totalPhotos - 1 && translateX < 0 && imageZoom === 1 && (
+              <div 
+                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                style={{
+                  transform: `translateX(${getWindowWidth() + translateX}px)`,
+                  transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+                }}
+              >
+                <img 
+                  src={getCurrentImage(currentIndex + 1)} 
+                  alt="Next Photo" 
+                  className="w-screen h-auto object-contain max-h-screen" 
+                  draggable="false"
+                />
+              </div>
+            )}
+
+            {/* Previous Image - Slides from Left during gallery swipe (Only if not zoomed) */}
+            {currentIndex > 0 && translateX > 0 && imageZoom === 1 && (
+              <div 
+                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                style={{
+                  transform: `translateX(${-getWindowWidth() + translateX}px)`,
+                  transition: isDragging ? 'none' : 'transform 0.3s ease-out'
+                }}
+              >
+                <img 
+                  src={getCurrentImage(currentIndex - 1)} 
+                  alt="Previous Photo" 
+                  className="w-screen h-auto object-contain max-h-screen" 
+                  draggable="false"
+                />
+              </div>
+            )}
+
+            {/* Navigation Arrows (Desktop Only) */}
+            <button 
+              onClick={handlePrevious}
+              disabled={currentIndex === 0 || isTransitioning || imageZoom > 1}
+              className="hidden md:block absolute left-4 text-white p-2 bg-black/30 hover:bg-black/50 rounded-full transition disabled:opacity-30 disabled:cursor-not-allowed z-30 pointer-events-auto"
+            >
+              <ChevronLeft size={32} />
+            </button>
+            
+            <button 
+              onClick={handleNext}
+              disabled={currentIndex === totalPhotos - 1 || isTransitioning || imageZoom > 1}
+              className="hidden md:block absolute right-4 text-white p-2 bg-black/30 hover:bg-black/50 rounded-full transition disabled:opacity-30 disabled:cursor-not-allowed z-30 pointer-events-auto"
+            >
+              <ChevronRight size={32} />
+            </button>
+          </div>
+
+          {/* Caption Footer */}
+          <div className="absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 to-transparent pointer-events-none">
+            <div className="px-6 py-6">
+              <p className="text-white text-lg">
+                Got a new pet 🤷
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<PhotoGalleryViewer />, document.getElementById('root'));
+  </script>
+</body>
+</html>
+
