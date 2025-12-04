@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -210,7 +211,7 @@
       const [hasText, setHasText] = useState(false);
       const [showEmojiPicker, setShowEmojiPicker] = useState(false);
       const [messages, setMessages] = useState([
-        { id: 1, type: 'image', imageUrl: 'https://i.ibb.co/fKxWKb3/Screenshot-20251129-120749.jpg', time: '17:06', sent: true }
+        { id: 1, type: 'image', imageUrl: 'https://i.ibb.co/fKxWKb3/Screenshot-20251129-120749.jpg', time: '17:06', sent: true, date: 'Tuesday' }
       ]);
       const inputRef = useRef(null);
       const messagesEndRef = useRef(null);
@@ -452,6 +453,23 @@
                         maxWidth: '290px',
                         position: 'relative'
                       }}>
+                        {message.date && (
+                          <div style={{
+                            position: 'absolute',
+                            top: '12px',
+                            left: '12px',
+                            background: 'rgba(0, 0, 0, 0.6)',
+                            color: 'white',
+                            padding: '4px 10px',
+                            borderRadius: '10px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            backdropFilter: 'blur(10px)',
+                            zIndex: 10
+                          }}>
+                            {message.date}
+                          </div>
+                        )}
                         <img 
                           src={message.imageUrl} 
                           alt="Sent image" 
@@ -666,3 +684,5 @@
   </script>
 </body>
 </html>
+
+                      
